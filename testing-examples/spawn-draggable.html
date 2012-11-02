@@ -1,0 +1,48 @@
+<!Doctype html>
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			//Function to clear all the objects when Clear all is clicked
+			$("#clear").click(function() {
+				$(".object").each(function() {
+					$(this).remove();
+				});
+			});
+			//When the document is double clicked, spawn an object
+			$(document).dblclick(function(e) {
+				//Give it the starting position of the cursor
+				$("body").append('<div class="object" style="top:' + e.pageY + 'px; left:' + e.pageX + 'px;"/>');
+				//Make all objects draggable to enable the most recently added one
+				$(".object").draggable({
+					containment: "parent"
+				});
+			});
+		});
+	</script>
+	<style>
+		.object {
+			width: 300px;
+			height: 200px;
+			background: #666;
+			position: absolute;
+		}
+		.object:hover {
+			cursor: move;
+		}
+		span {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}}
+	</style>
+</head>
+<body>
+	<span id="clear">Clear all</span>
+</body>
+</html>
