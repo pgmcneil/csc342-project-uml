@@ -11,26 +11,53 @@
 					$(this).remove();
 				});
 			});
+			max = 0;
+			$(document).on("mousedown", ".object", function(event){
+				
+					//alert($(this).css("z-index"));
+					if($(this).css("z-index") != max){
+						$(this).css("z-index", ++max);
+					}
+					$("#zIndex").text( $(this).css("z-index"));
+					$(".selectedObject").removeClass("selectedObject");
+					$(this).addClass("selectedObject");
+					event.stopPropagation();
+				});
+			
 			//When the document is double clicked, spawn an object
-			$(document).dblclick(function(e) {
+			$("#canvas").dblclick(function(e) {
 				//Give it the starting position of the cursor
-				$("body").append('<div class="object" style="top:' + e.pageY + 'px; left:' + e.pageX + 'px;"/>');
+				$("#canvas").append('<div class="object" style="top:' + e.pageY + 'px; left:' + e.pageX + 'px;"/>');
 				//Make all objects draggable to enable the most recently added one
 				$(".object").draggable({
-					containment: "parent"
+					containment: "parent",
 				});
+				
 			});
 		});
 	</script>
 	<style>
+		body,html{
+  			height:100%;
+		}
+		#canvas{
+			height:100%;
+		}
 		.object {
 			width: 300px;
 			height: 200px;
 			background: #666;
 			position: absolute;
+			border: 5px solid blue;	
+
 		}
+		
 		.object:hover {
 			cursor: move;
+		}
+		.selectedObject{
+			border: 5px solid red;	
+			
 		}
 		span {
 			-webkit-touch-callout: none;
@@ -44,5 +71,8 @@
 </head>
 <body>
 	<span id="clear">Clear all</span>
+	<span id="zIndex"></span>
+	<div id="canvas"></div>
+
 </body>
 </html>
