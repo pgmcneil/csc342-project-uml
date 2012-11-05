@@ -6,13 +6,12 @@
 	<script>
 		$(document).ready(function() {
 			//Function to clear all the objects when Clear all is clicked
-			$("#clear").click(function() {
+			$("#clear").on("click", function() {
 				$(".object").each(function() {
 					$(this).remove();
 				});
 			});
-			//When the document is double clicked, spawn an object
-			$("body").on("dblclick", function(e) {
+			$(document).on("dblclick", "body", function(e) {
 				var object = '<div class="object" style="top:' + e.pageY + 'px; left:' + e.pageX + 'px;"> \
 					<span class="close">X</span>\
 					</div>';
@@ -22,13 +21,12 @@
 				$(".object").draggable({
 					containment: "parent"
 				});
-				//All internal element listeners must be inside here, only way to stop the propagation and enable listeners for children
-				$("div.object").on("dblclick", function(e) {
-					e.stopPropagation();
-				});
-				$("div.object span.close").on("click", function(e) {
-					$(this).parent().remove();
-				});
+			});
+			$(document).on("dblclick", "div.object", function(e) {
+				e.stopPropagation();
+			});
+			$(document).on("click", "div.object span.close", function(e) {
+				$(this).parent().remove();
 			});
 		});
 	</script>
