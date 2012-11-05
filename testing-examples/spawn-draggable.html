@@ -20,6 +20,7 @@
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
 							<div class="header">	\
+								<span class="settings"><img src="gear.jpg" alt="Settings Menue Button" /></span> \
 								<span class="objectTitle">Object ' + id + '</span> \
 								<span class="delete">X</span> \
 							</div>	\
@@ -63,8 +64,8 @@
 				
 				//Add object and immediately select it
 				$(objectTemplateWithID($(".object").length))
-					.css("top", yPos + "px")
-					.css("left", xPos + "px")
+					.css("top", e.pageY + "px")
+					.css("left", e.pageX + "px")
 					.draggable({containment: "parent"})
 					.appendTo("#canvas")
 					.trigger("mousedown");
