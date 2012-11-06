@@ -52,11 +52,17 @@
 			
 			
 			//When the document is double clicked, spawn an object
-			$("#canvas").dblclick(function(e) {
+			$("#canvas").on("dblclick", function(e) {
 				
-				//Position object so that the cursor is in the center of the header
+				//Position object so that the cursor is in the center of the header				
 				yPos = (e.pageY - ($(objectTemplateWithID(null)).find(".header").height()/2 ));
 				xPos = e.pageX - ($(objectTemplateWithID(null)).width()/2);
+				
+				console.log(e.pageX + "," + e.pageY);
+				console.log("height: " + $(objectTemplateWithID(null)).find(".header").height());
+				console.log("width: " + $(objectTemplateWithID(null)).width());
+				console.log(xPos + "," + yPos);
+				
 				
 				//Add object and immediately select it
 				$(objectTemplateWithID($(".object").length))
@@ -69,6 +75,9 @@
 				//$(".object").draggable({containment: "parent"});
 			});
 		});
+		function showSettings() {
+		 //do whatever
+		}
 	</script>
 	<style>
 		body,html{
@@ -84,9 +93,9 @@
 		.object {
 			width: 120px;
 			height: 180px;
+			position: fixed;
 			background: #666;
 			opacity: 0.8;
-			position: absolute;
 			border: 2px solid blue;	
 			border-radius: 10px;
 
@@ -97,6 +106,7 @@
 			border-top-left-radius:5px;
 			border-top-right-radius:5px;
 			top: 0px;
+			opacity: 1;
 			background:blue;
 			height:25px;
 			width:100%;	
@@ -105,10 +115,10 @@
 		
 		
 		.object .objectTitle{
-			position: absolute;
+			position: relative;
 			top: 15%;	
 			left:30%;
-				-webkit-touch-callout: none;
+			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
 			-moz-user-select: none;
@@ -141,7 +151,7 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-		}}
+		}
 	</style>
 </head>
 <body>
