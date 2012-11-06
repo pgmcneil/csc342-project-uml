@@ -14,13 +14,15 @@
 			$(document).on("click", ".object .header .delete", function(e){
 			
 					$(this).parent().parent().remove();
-
 			
+			});
+			$(document).on("click", ".object .header .settings img", function() {
+				alert("asdf");
 			});
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
 							<div class="header">	\
-								<span class="settings"><img src="gear.jpg" alt="Settings Menue Button" /></span> \
+								<span class="settings"><img src="gear.jpg" alt="Settings Menue Button" onclick="showSettings()" /></span> \
 								<span class="objectTitle">Object ' + id + '</span> \
 								<span class="delete">X</span> \
 							</div>	\
@@ -29,11 +31,11 @@
 						</div>';
 					
 			};
-			// $("#canvas").on("dblclick", ".object", function(e){
-				// e.stopImmediatePropagation();
-				// return true;
-// 						
-			// });
+			$("#canvas").on("dblclick", ".object", function(e){
+				e.stopImmediatePropagation();
+				return true;
+			
+			});
 			
 			//hold value for zindex bring to front
 			front = 0;
