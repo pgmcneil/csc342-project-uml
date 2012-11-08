@@ -1,9 +1,18 @@
 <!Doctype html>
 <html>
 <head>
+
+
+
+
+        <script type="text/javascript" src="farbtastic.js"></script>
+        <link rel="stylesheet" href="farbtastic.css" type="text/css" />
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 	<script>
+
+
+
 		$(document).ready(function() {
 			//Function to clear all the objects when Clear all is clicked
 			$("#clear").click(function() {
@@ -69,6 +78,14 @@
 			});
 		});
 	</script>
+
+<script type="text/javascript">
+   $(document).ready(function() {
+     $('#colorpicker').farbtastic('#color');
+   });
+ </script>
+
+
 	<style>
 		body,html{
   			height:100%;
@@ -145,6 +162,8 @@
 	</style>
 </head>
 <body>
+   <form><input type="text" id="color" name="color" value="#123456" /></form>
+    <div id="colorpicker"></div>
 	<span id="clear">Clear all</span>
 	<div id="canvas"></div>
 
