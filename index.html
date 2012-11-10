@@ -12,8 +12,11 @@
 								<span class="settings">O</span> \
 								<span class="delete">X</span> \
 							</div>	\
-								\
-								\
+							<div class="content" contenteditable="true">	\
+								<table> \
+									<tr><td>Sample attribute</tr> \
+								</table> \
+							</div>\
 						</div>';
 					
 			};
@@ -118,6 +121,13 @@
 			$(document).on("click", ".color", function() {
 				$(".selectedObject").css("background-color", $(this).css("background-color"))
 			});
+			$(document).on("click", ".object .content", function(e) {
+				$(this).focus();
+				e.stopPropagation();
+			});
+			$(document).on("mousemove", ".object .content", function(e) {
+				e.stopPropagation();
+			});
 		});
 	</script>
 
@@ -167,6 +177,9 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+		}
+		.object .content {
+			cursor: default;
 		}
 		.header .delete{
 			float: right;
