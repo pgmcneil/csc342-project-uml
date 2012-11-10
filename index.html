@@ -1,36 +1,15 @@
 <!Doctype html>
 <html>
 <head>
-
-
-
-
-        <script type="text/javascript" src="farbtastic.js"></script>
-        <link rel="stylesheet" href="farbtastic.css" type="text/css" />
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 	<script>
-
-        
-		
-
 		$(document).ready(function() {
-			//Function to clear all the objects when Clear all is clicked
-			$("#clear").click(function() {
-				$(".object").each(function() {
-					$(this).remove();
-				});
-			});
-			
-			 $(document).on("click", ".color", function() { $(".selectedObject").css("background-color", $(this).css("background-color") )});
-			
-			$(document).on("click", ".object .header .delete", function(e){
-					$(this).parent().parent().remove();
-			});
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
 							<div class="header">	\
 								<span class="objectTitle">Object ' + id + '</span> \
+								<span class="settings">O</span> \
 								<span class="delete">X</span> \
 							</div>	\
 								\
@@ -38,28 +17,55 @@
 						</div>';
 					
 			};
+			function createSettingsMenu(id) {
+				return '<div class="settings-menu" reference="' + id + '"> \
+					<div class="settings-content"> \
+						<p>Settings go here</p> \
+					</div> \
+					<div class="prong"></div> \
+					</div>';
+			}
+			function removeSettings() {
+				$(".settings-menu").remove();
+			}
+			function checkID(id) {
+				if(document.getElementById("object"+id)) {
+					return checkID(++id);
+				} else {
+					return id;
+				}
+			}
+			
+			//hold value for zindex bring to front
+			front = 0;
+/*
+ * LISTENERS
+ * 
+ */
+			//Function to clear all the objects when Clear all is clicked
+			$("#clear").click(function() {
+				$(".object").each(function() {
+					$(this).remove();
+				});
+			});
+			$(document).on("click", ".object .header .delete", function(e){
+					$(this).parent().parent().remove();
+			});
 			$("#canvas").on("dblclick", ".object", function(e){
 				e.stopImmediatePropagation();
 				return true;					
 			});
-			
-			//hold value for zindex bring to front
-			front = 0;
-			
-
-			
-			
 			$("#canvas").on("mousedown", ".object", function(e){
-// 				
-					// //Bring to Front
-					if($(this).css("z-index") != front){
-						$(this).css("z-index", ++front);
-					}
-					//$("#zIndex").text( $(this).css("z-index")); //debug
-					
-					//Toggle Selected
-					$(".selectedObject").removeClass("selectedObject");
-					$(this).addClass("selectedObject");
+				removeSettings();
+				// //Bring to Front
+				if($(this).css("z-index") != front){
+					$(this).css("z-index", ++front);
+				}
+				//$("#zIndex").text( $(this).css("z-index")); //debug
+				
+				//Toggle Selected
+				$(".selectedObject").removeClass("selectedObject");
+				$(this).addClass("selectedObject");
 			});
 			
 			
@@ -67,7 +73,8 @@
 			$("#canvas").on("dblclick", function(e) {
 				
 				//Position object so that the cursor is in the center of the header
-				var id = $(".object").length;
+				var id = 0;
+				id = checkID(id);
 				var newObject = objectTemplateWithID(id);
 				$("#canvas").append(newObject);
 				newObject = $("#object"+id);
@@ -75,23 +82,44 @@
 				xPos = e.pageX - newObject.width()/2;
 				
 				
-				
-				
 				//Add object and immediately select it
 				newObject
-					.css("top", yPos + "px")
-					.css("left", xPos + "px")
+					.offset({
+						top: yPos,
+						left: xPos
+					})
 					.draggable({containment: "parent"})
 					.trigger("mousedown");
 			});
+			$(document).on("click", ".settings", function(e) {
+				e.stopPropagation();
+				if($(".settings-menu").length != 0) {
+					return;
+				}
+				var object = $(this).parent().parent();
+				var settings = createSettingsMenu(object.attr("id"));
+				$("#canvas").append(settings);
+				var xPos = object.offset().left;
+				var yPos = object.offset().top - $(".settings-menu").height() - 20;
+				if(yPos < $("#canvas").offset().top) {
+					yPos = object.offset().top + object.height() + 20;
+				}
+				$(".settings-menu").offset({
+					top: yPos,
+					left: xPos
+				});
+			});
+			$(document).on("click", function() {
+				$(".settings-menu").remove();
+			});
+			$(document).on("click", ".settings-menu", function(e) {
+				e.stopPropagation();
+			});
+			$(document).on("click", ".color", function() {
+				$(".selectedObject").css("background-color", $(this).css("background-color"))
+			});
 		});
 	</script>
-
-<script type="text/javascript">
-   $(document).ready(function() {
-     $('#colorpicker').farbtastic('#color');
-   });
- </script>
 
 
 	<style>
@@ -108,7 +136,7 @@
 		.object {
 			width: 120px;
 			height: 180px;
-			position: fixed;
+			position: absolute;
 			background: #666;
 			opacity: 0.8;
 			border: 2px solid blue;	
@@ -130,7 +158,7 @@
 		
 		
 		.object .objectTitle{
-			position: relative;
+			position: absolute;
 			top: 15%;	
 			left:30%;
 			-webkit-touch-callout: none;
@@ -140,17 +168,17 @@
 			-ms-user-select: none;
 			user-select: none;
 		}
-		
 		.header .delete{
 			float: right;
+			cursor: pointer;
 		}
 		
 			
 		.color{
 		
-		width: 20px;
-		height: 20px;
-		margin:left;
+			width: 20px;
+			height: 20px;
+			margin:left;
 	   
 
 		}
@@ -183,6 +211,23 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+		}
+		.object .header .settings {
+			color: white;
+			float: left;
+		}
+		.settings-menu {
+			width: 200px;
+			height: 100px;
+			background-color: #fff;
+			border: 1px solid #ccc;	
+			border-radius: 10px;
+			-webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
+			-moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.3);
+			box-shadow:         0px 0px 8px rgba(0,0,0,0.3);
+		}
+		.settings-menu .settings-content {
+			margin: 10px;
 		}
 	</style>
 </head>
