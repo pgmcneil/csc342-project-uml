@@ -158,8 +158,21 @@
   			height:100%;
 		}
 		
+		
+		#toolbox{
+		 
+			height:100%;
+			width:29%;
+			vertical-align: top;
+			border: 1px solid black;
+		    
+			display:inline-block;
+		}
+		
 		#canvas{
 			height:100%;
+			width:70%;
+			display: inline-block;
 		}
 		#canvas div {
 			display: inline-block;	
@@ -263,11 +276,33 @@
 		.settings-menu .settings-content {
 			margin: 10px;
 		}
+		
+		
+		
 	</style>
 </head>
 <body>
-	<span id="clear">Clear all</span>
+	
 	<div id="canvas"></div>
+	<div id="toolbox">
+	
+		 <fieldset>
+			<legend>Properties:</legend>
+			Name: <input type="text"><br>
+			Email: <input type="text"><br>
+			Date of birth: <input type="text">
+		  </fieldset>
+
+		   <fieldset>
+			<legend>Settings:</legend>
+			Name: <input type="text"><br>
+			Email: <input type="text"><br>
+			Date of birth: <input type="text">
+		  </fieldset>
+
+	
+	</div>
+	
 	
 	
 	
