@@ -66,6 +66,15 @@
  * LISTENERS
  * 
  */
+			//Properties Listener
+			/*$("#rename_text").change(function() {
+				console.log("fired");
+				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
+			});*/
+			$("#rename_button").on("click", function(){
+				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
+				//alert(document.getElementById('rename_text').value);
+			});
 			//Function to clear all the objects when Clear all is clicked
 			$("#clear").click(function() {
 				$(".object").each(function() {
@@ -90,6 +99,7 @@
 				//Toggle Selected
 				$(".selectedObject").removeClass("selectedObject");
 				$(this).addClass("selectedObject");
+				$('#rename_text').val($(this).find(".objectTitle").html());
 			});
 			
 			
@@ -188,6 +198,11 @@
 		}
 		#canvas div {
 			display: inline-block;	
+		}
+		#rename_button {
+			height: 10px;
+			width: 10px;
+			border: 1px solid black;
 		}
 		.object {
 			width: 120px;
@@ -299,12 +314,10 @@
 	<div id="canvas"></div>
 	<div id="toolbox">
 	
-		 <fieldset>
+		<fieldset>
 			<legend>Properties:</legend>
-			Name: <input type="text"><br>
-			Email: <input type="text"><br>
-			Date of birth: <input type="text">
-		  </fieldset>
+			Rename: <input id="rename_text" type="text" name="change_name"><span id="rename_button">Change</span>
+		</fieldset>
 
 		   <fieldset>
 			<legend>Settings:</legend>
