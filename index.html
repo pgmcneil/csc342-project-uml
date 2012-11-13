@@ -5,17 +5,35 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 	<script>
 	
-				function collapse(){
-			        $(".selectedObject .content").slideUp();
-				}
+			function collapse(){
+			    $(".selectedObject .content").slideUp();
+			}
 			
+			function collapseAll() {
+				$(".object .content").each(function() {
+					$(this).slideUp();
+				});
+			}			
+			
+			function expandAll() {
+				$(".object .content").each(function() {
+					$(this).show("slow");
+				});
+			}
 			
 			function expand(){
-	           	  $(".selectedObject .content").show("slow");
-				}
+				$(".selectedObject .content").show("slow");
+			}
 	
-	
-	
+			function rename() {
+				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
+			}
+			
+			function clearAll() {
+				$(".object").each(function() {
+					$(this).remove();
+				});
+			}
 	
 		$(document).ready(function() {
 			function objectTemplateWithID(id){
@@ -54,6 +72,8 @@
 				}
 			}
 			
+			
+			
 			//hold value for zindex bring to front
 			front = 0;
 /*
@@ -68,12 +88,6 @@
 			$("#rename_button").on("click", function(){
 				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
 				//alert(document.getElementById('rename_text').value);
-			});
-			//Function to clear all the objects when Clear all is clicked
-			$("#clear").click(function() {
-				$(".object").each(function() {
-					$(this).remove();
-				});
 			});
 			$(document).on("click", ".object .header .delete", function(e){
 					$(this).parent().parent().remove();
@@ -311,10 +325,15 @@
 	
 	<div id="canvas"></div>
 	<div id="toolbox">
-	
+		<fieldset>
+			<legend>Global Settings:</legend>
+			Clear All: <button type="button" onclick= "clearAll()">Clear All</button><br/>
+			Collapse All: <button type="button" onclick= "collapseAll()">Collapse All</button><br/>
+			Expand All: <button type="button" onclick= "expandAll()">Expand All</button>
+		</fieldset>
 		<fieldset>
 			<legend>Properties:</legend>
-			Rename: <input id="rename_text" type="text" name="change_name" maxlength="10"><span id="rename_button">Change</span>
+			Rename: <input id="rename_text" type="text" name="change_name" maxlength="10"><button type="button" onclick= "rename()">Change</button>
 		</fieldset>
 
 		   <fieldset>
