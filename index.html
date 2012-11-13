@@ -43,7 +43,7 @@
 								<span class="settings"><img src="images/gear2.png" alt="Settings Menue Button" /></span> \
 								<span class="delete">X</span> \
 							</div>	\
-							<div class="content" contenteditable="true">	\
+							<div class="content">	\
 								<table> \
 									<tr><td>Sample attribute</tr> \
 								</table> \
@@ -72,8 +72,18 @@
 				}
 			}
 			
+			function editAttribute(cell) {
+				cell.html('<input type="text" value="' + cell.html() + '" />');
+				cell.find("input").focus().css("width", $(".object.selectedObject .content").width() - 20);
+			}
 			
-			
+			function recordAttribute(input) {
+				input.parent().html(input.val());
+			}
+			function removeAttribute(input) {
+				console.log(input.parent().parent());
+				input.parent().parent().remove()
+			}
 			//hold value for zindex bring to front
 			front = 0;
 /*
@@ -153,6 +163,7 @@
 			});
 			$(document).on("click", function() {
 				$(".settings-menu").remove();
+				$(".object .content input").blur();
 			});
 			$(document).on("click", ".settings-menu", function(e) {
 				e.stopPropagation();
@@ -163,11 +174,32 @@
 			   $(".selectedObject .content").css("color", $(this).attr("color"));
 				
 			});
-			$(document).on("click", ".object .content", function(e) {
-				$(this).focus();
+			$(document).on("click", ".object .content td", function(e) {
+				e.stopPropagation();
+				editAttribute($(this));
+			});
+			$(document).on("click", ".object .content td input", function(e) {
 				e.stopPropagation();
 			});
-			$(document).on("mousemove", ".object .content", function(e) {
+			$(document).on("focusout", ".object .content input", function(e) {
+				if($(this).val().length > 0) {
+					recordAttribute($(this));
+				} else {
+					removeAttribute($(this));
+				}
+			});
+			$(document).on("keypress", ".object .content input:focus", function(e) {
+				if(e.which == 13) {
+					$(this).blur();
+					$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
+					editAttribute($(".object.selectedObject .content tbody tr:last td"));
+				}
+			}).on("keydown", ".object .content input:focus", function(e) {
+				if(e.which == 8 && $(this).val().length == 0) {
+					removeAttribute($(this));
+				}
+			});
+			$(document).on("mousedown", ".object .content td", function(e) {
 				e.stopPropagation();
 			});
 		});
