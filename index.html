@@ -4,6 +4,19 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 	<script>
+	
+				function collapse(){
+			        $(".selectedObject .content").slideUp();
+				}
+			
+			
+			function expand(){
+	           	  $(".selectedObject .content").show("slow");
+				}
+	
+	
+	
+	
 		$(document).ready(function() {
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
@@ -23,35 +36,16 @@
 			function createSettingsMenu(id) {
 				return '<div class="settings-menu" reference="' + id + '"> \
 					<div class="settings-content"> \
-						<div>\
-							<table>\
-								<tr>\
-									<td><div class="color" style="background-color: #00FF00"></div></td>\
-									<td><div class="color" style="background-color: #FF7F00	"></div></td>\
-									<td><div class="color" style="background-color: #FF0000"></div></td>\
-									<td><div class="color" style="background-color: #0000CD"></div></td>\
-								</tr>\
-								<tr>\
-									<td><div class="color" style="background-color: #70DB93"></div></td>\
-									<td><div class="color" style="background-color: #CAFF70"></div></td>\
-									<td><div class="color" style="background-color: #FFFF00"></div></td>\
-									<td><div class="color" style="background-color: #236B8E"></div></td>\
-								</tr>\
-								<tr>\
-									<td><div class="color" style="background-color: #5959AB"></div></td>\
-									<td><div class="color" style="background-color: #006400"></div></td>\
-									<td><div class="color" style="background-color: #800080"></div></td>\
-									<td><div class="color" style="background-color: #666"></div></td>\
-								</tr>\
-							</table>\
-						</div>\
-					</div> \
+           			</div> \
 					<div class="prong"></div> \
 					</div>';
 			}
 			function removeSettings() {
 				$(".settings-menu").remove();
 			}
+			
+		
+			
 			function checkID(id) {
 				if(document.getElementById("object"+id)) {
 					return checkID(++id);
@@ -150,7 +144,10 @@
 				e.stopPropagation();
 			});
 			$(document).on("click", ".color", function() {
-				$(".selectedObject").css("background-color", $(this).css("background-color"))
+			var color = $(this).css("background-color");
+				$(".selectedObject .content").css("background-color", color);
+			   $(".selectedObject .content").css("color", $(this).attr("color"));
+				
 			});
 			$(document).on("click", ".object .content", function(e) {
 				$(this).focus();
@@ -206,9 +203,7 @@
 		}
 		.object {
 			width: 120px;
-			height: 180px;
 			position: absolute;
-			background: #666;
 			opacity: 0.8;
 			border: 2px solid blue;	
 			border-radius: 10px;
@@ -241,6 +236,9 @@
 		}
 		.object .content {
 			cursor: default;
+			height: 180px;
+			width: 100%;
+			background: grey;
 		}
 		.header .delete{
 			float: right;
@@ -320,10 +318,38 @@
 		</fieldset>
 
 		   <fieldset>
-			<legend>Settings:</legend>
-			Name: <input type="text"><br>
-			Email: <input type="text"><br>
-			Date of birth: <input type="text">
+			<legend> <img src="gearsettings.jpg" alt="gear for settings" width="42" height="42"> </legend>
+			Colors:
+			<div>
+							<table>
+								<tr>
+									<td><div color="black" class="color" style="background-color: #00FF00"></div></td>
+									<td><div color="black" class="color" style="background-color: #FF7F00	"></div></td>
+									<td><div color="black" class="color" style="background-color: #FF0000"></div></td>
+									<td><div color="white" class="color" style="background-color: #0000CD"></div></td>
+								</tr>
+								<tr>
+									<td><div color="black" class="color" style="background-color: #70DB93"></div></td>
+									<td><div color="black" class="color" style="background-color: #CAFF70"></div></td>
+									<td><div color="black" class="color" style="background-color: #FFFF00"></div></td>
+									<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
+								</tr>
+								<tr>
+									<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
+									<td><div color="white" class="color" style="background-color: #006400"></div></td>
+									<td><div color="white" class="color" style="background-color: #800080"></div></td>
+									<td><div color="white" class="color" style="background-color: #666"></div></td>
+								</tr>
+							</table>
+						</div>
+			Layout
+			
+				<form>
+				<button type="button" onclick= "collapse()">Collapse!</button>
+				<button type="button" onclick= "expand()">Expand!</button>
+				</form>
+			
+			
 		  </fieldset>
 
 	
