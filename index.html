@@ -73,6 +73,7 @@
 			}
 			function addAttribute() {
 				$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
+				editAttribute($(".object.selectedObject .content tbody tr:last td"));
 			}
 			function editAttribute(cell) {
 				cell.html('<input type="text" value="' + cell.html() + '" />');
@@ -83,7 +84,7 @@
 				input.parent().html(input.val());
 			}
 			function removeAttribute(input) {
-				input.remove();
+				input.parent().remove();
 			}
 			//hold value for zindex bring to front
 			front = 0;
@@ -192,7 +193,6 @@
 			$(document).on("keypress", ".object .content input:focus", function(e) {
 				if(e.which == 13) {
 					addAttribute();
-					editAttribute($(".object.selectedObject .content tbody tr:last td"));
 				}
 			}).on("keydown", ".object .content input:focus", function(e) {
 				if(e.which == 8 && $(this).val().length == 0) {
@@ -200,6 +200,10 @@
 					var cells = $(".object.selectedObject .content tbody tr td:not(:has(input))");
 					editAttribute($(cells[cells.length - 1]));
 				}
+			});
+			$(document).on("click", ".object.selectedObject .content", function(e) {
+				e.stopPropagation();
+				addAttribute();
 			});
 			$(document).on("mousedown", ".object .content td", function(e) {
 				e.stopPropagation();
