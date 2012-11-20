@@ -196,6 +196,7 @@
 				}
 			}).on("keydown", ".object .content input:focus", function(e) {
 				if(e.which == 8 && $(this).val().length == 0) {
+					e.preventDefault();
 					var cells = $(".object.selectedObject .content tbody tr td:not(:has(input))");
 					editAttribute($(cells[cells.length - 1]));
 				}
