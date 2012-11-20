@@ -71,7 +71,9 @@
 					return id;
 				}
 			}
-			
+			function addAttribute() {
+				$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
+			}
 			function editAttribute(cell) {
 				cell.html('<input type="text" value="' + cell.html() + '" />');
 				cell.find("input").focus().css("width", $(".object.selectedObject .content").width() - 20);
@@ -81,8 +83,7 @@
 				input.parent().html(input.val());
 			}
 			function removeAttribute(input) {
-				console.log(input.parent().parent());
-				input.parent().parent().remove()
+				input.remove();
 			}
 			//hold value for zindex bring to front
 			front = 0;
@@ -190,13 +191,13 @@
 			});
 			$(document).on("keypress", ".object .content input:focus", function(e) {
 				if(e.which == 13) {
-					$(this).blur();
-					$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
+					addAttribute();
 					editAttribute($(".object.selectedObject .content tbody tr:last td"));
 				}
 			}).on("keydown", ".object .content input:focus", function(e) {
 				if(e.which == 8 && $(this).val().length == 0) {
-					removeAttribute($(this));
+					var cells = $(".object.selectedObject .content tbody tr td:not(:has(input))");
+					editAttribute($(cells[cells.length - 1]));
 				}
 			});
 			$(document).on("mousedown", ".object .content td", function(e) {
@@ -209,6 +210,12 @@
 	<style>
 		body,html{
   			height:98%;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
 		}
 		
 		div{
@@ -273,12 +280,6 @@
 			position: absolute;
 			top: 15%;	
 			left:30%;
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
 		}
 		.object .content {
 			cursor: default;
