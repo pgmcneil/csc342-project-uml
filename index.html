@@ -108,14 +108,14 @@
 				if($(this).parent().parent().find(".content").is(":visible")){
 					$(this).parent().parent().find(".content").slideUp(function(){
 						$(this).parent().find(".header").css("border-radius", "5px");
+						$(this).parent().find(".minimize").html("&#9633;");
 					});
-					//Show maximize button
-					$(this).html("&#9633;");
 				}else{
 					$(this).parent().css("border-radius", "5px 5px 0 0");						
-					$(this).parent().parent().find(".content").slideDown();
-					//Show Minimize button
-					$(this).html("_");
+					$(this).parent().parent().find(".content").slideDown(function(){
+						//Show Minimize button
+						$(this).parent().find(".minimize").html("_");
+					});
 				}
 			});
 
