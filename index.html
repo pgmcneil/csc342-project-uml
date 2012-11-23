@@ -40,7 +40,7 @@
 				return '<div class="object" id="object'+ id +'"> \
 							<div class="header">	\
 								<span class="objectTitle">Object ' + id + '</span> \
-								<span class="settings"><img src="images/gear2.png" alt="Settings Menue Button" /></span> \
+								<span class="minimize">_</span> \
 								<span class="delete">X</span> \
 							</div>	\
 							<div class="content" contenteditable="true">	\
@@ -89,9 +89,21 @@
 				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
 				//alert(document.getElementById('rename_text').value);
 			});
-			$(document).on("click", ".object .header .delete", function(e){
+			$("#canvas").on("click", ".object .delete", function(e){
 					$(this).parent().parent().remove();
 			});
+			$("#canvas").on("click", ".object .minimize", function(e){
+				if($(this).parent().parent().find(".content").is(":visible")){
+					$(this).parent().parent().find(".content").slideUp();
+					//Show maximize button
+					$(this).html("&#9633;");
+				}else{
+					$(this).parent().parent().find(".content").show("slow");
+					//Show Minimize button
+					$(this).html("_");
+				}
+			});
+
 			$("#canvas").on("dblclick", ".object", function(e){
 				e.stopImmediatePropagation();
 				return true;					
@@ -133,30 +145,30 @@
 					.draggable({containment: "parent"})
 					.trigger("mousedown");
 			});
-			$(document).on("click", ".settings", function(e) {
-				e.stopPropagation();
-				if($(".settings-menu").length != 0) {
-					return;
-				}
-				var object = $(this).parent().parent();
-				var settings = createSettingsMenu(object.attr("id"));
-				$("#canvas").append(settings);
-				var xPos = object.offset().left;
-				var yPos = object.offset().top - $(".settings-menu").height() - 20;
-				if(yPos < $("#canvas").offset().top) {
-					yPos = object.offset().top + object.height() + 20;
-				}
-				$(".settings-menu").offset({
-					top: yPos,
-					left: xPos
-				});
-			});
-			$(document).on("click", function() {
-				$(".settings-menu").remove();
-			});
-			$(document).on("click", ".settings-menu", function(e) {
-				e.stopPropagation();
-			});
+// 			$(document).on("click", ".settings", function(e) {
+// 				e.stopPropagation();
+// 				if($(".settings-menu").length != 0) {
+// 					return;
+// 				}
+// 				var object = $(this).parent().parent();
+// 				var settings = createSettingsMenu(object.attr("id"));
+// 				$("#canvas").append(settings);
+// 				var xPos = object.offset().left;
+// 				var yPos = object.offset().top - $(".settings-menu").height() - 20;
+// 				if(yPos < $("#canvas").offset().top) {
+// 					yPos = object.offset().top + object.height() + 20;
+// 				}
+// 				$(".settings-menu").offset({
+// 					top: yPos,
+// 					left: xPos
+// 				});
+// 			});
+// 			$(document).on("click", function() {
+// 				$(".settings-menu").remove();
+// 			});
+//			$(document).on("click", ".settings-menu", function(e) {
+//				e.stopPropagation();
+//			});
 			$(document).on("click", ".color", function() {
 			var color = $(this).css("background-color");
 				$(".selectedObject .content").css("background-color", color);
@@ -175,33 +187,33 @@
 
 
 	<style>
+	
 		body,html{
   			height:98%;
 		}
-		
 		div{
 			display: inline-block;
+			margin: -4px;
 			vertical-align: top;
+			
 		}
-		
-		#toolbox{
-		 
-			height:100%;
-			width:28%;
-			vertical-align: top;
-			border: 1px solid black;
-		    
-			display:inline-block;
+		span {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
 		}
 		
 		#canvas{
 			height:100%;
-			width:70%;
+			width: 85%;
 			display: inline-block;
 			border: 2px solid grey;
  			background-color:#fff;
-			background-image: linear-gradient(grey 2px, transparent 2px),
-			linear-gradient(90deg, grey 2px, transparent 2px),
+			background-image: linear-gradient(rgba(0,0,0,.3) 2px, transparent 2px),
+			linear-gradient(90deg, rgba(0,0,0,.3) 2px, transparent 2px),
 			linear-gradient(rgba(0,0,0,.3) 1px, transparent 1px),
 			linear-gradient(90deg, rgba(0,0,0,.3) 1px, transparent 1px);
 			background-size:100px 100px, 100px 100px, 20px 20px, 20px 20px;
@@ -210,11 +222,7 @@
 		#canvas div {
 			display: inline-block;	
 		}
-		#rename_button {
-			height: 10px;
-			width: 10px;
-			border: 1px solid black;
-		}
+		
 		.object {
 			width: 120px;
 			position: absolute;
@@ -226,6 +234,7 @@
 		.object .header{
 			color: white;
 			position: relative;
+			margin: 0px;
 			border-top-left-radius:5px;
 			border-top-right-radius:5px;
 			top: 0px;
@@ -235,8 +244,21 @@
 			width:100%;	
 		
 		}
-		
-		
+		.object .minimize {
+			position: relative;
+			left: 5%;
+			top:15%;
+			width: 15px;
+			border-radius: 4px;
+			text-align: center;
+			color: white;
+			cursor: pointer;
+			float: left;
+		}
+		.object .minimize:hover{
+			top: 10%;
+			background: rgb(200,10,10);
+		}
 		.object .objectTitle{
 			position: absolute;
 			top: 15%;	
@@ -248,34 +270,29 @@
 			-ms-user-select: none;
 			user-select: none;
 		}
+		.object .delete{
+			position: relative;
+			width: 16px;
+			top: 15%;
+			right:5%;
+			float: right;
+			text-align: center;
+			cursor: pointer;
+			border-radius: 4px;
+		}
+		.object .delete:hover{
+			top: 10%;
+			background: rgb(200,10,10);
+		}
 		.object .content {
 			cursor: default;
 			height: 180px;
 			width: 100%;
+			margin: 0px;
+			border-radius: 0 0 7px 7px; 
 			background: grey;
+			color: white;
 		}
-		.header .delete{
-			float: right;
-			cursor: pointer;
-		}
-		
-			
-		.color{
-		
-			width: 20px;
-			height: 20px;
-			margin:left;
-	   
-
-		}
-		
-		.color:hover{
-		border: 1px solid #3399CC;
-		
-		
-		}
-		
-		
 		.object:hover {
 			cursor: move;
 		}
@@ -290,17 +307,28 @@
 			background: -webkit-linear-gradient(top, #f85032 0%,#f16f5c 50%,#f6290c 51%,#f02f17 71%,#e73827 100%); /* Chrome10+,Safari5.1+ */
 			
 		}
-		span {
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
+		
+		#toolbox{
+		 
+			height:100%;
+			width:14%;
+			vertical-align: top;
+			border: 2px solid black;
+		    margin-left: 2px;
+			display:inline-block;
 		}
-		.object .header .settings {
-			color: white;
-			float: left;
+		.color{
+		
+			width: 20px;
+			height: 20px;
+			margin:left;
+	   
+
+		}
+		.color:hover{
+		border: 1px solid #3399CC;
+		
+		
 		}
 		.settings-menu {
 			width: 200px;
@@ -315,9 +343,15 @@
 		.settings-menu .settings-content {
 			margin: 10px;
 		}
-		
-		
-		
+		#rename_text{
+			width:100%;
+		}
+		#rename_button {
+			height: 10px;
+			width: 10px;
+			border: 1px solid black;
+		}
+
 	</style>
 </head>
 
@@ -327,50 +361,51 @@
 	<div id="toolbox">
 		<fieldset>
 			<legend>Global Settings:</legend>
-			Clear All: <button type="button" onclick= "clearAll()">Clear All</button><br/>
-			Collapse All: <button type="button" onclick= "collapseAll()">Collapse All</button><br/>
-			Expand All: <button type="button" onclick= "expandAll()">Expand All</button>
+				<button type="button" onclick= "clearAll()">Clear All</button><br/>
+				<button type="button" onclick= "collapseAll()">Collapse All</button><br/>
+				<button type="button" onclick= "expandAll()">Expand All</button>
+		</fieldset>
+		
+
+		<fieldset>
+			<legend> <img src="gearsettings.jpg" alt="gear for settings" width="42" height="42"> </legend>
+			Colors:
+			<div>
+				<table>
+					<tr>
+						<td><div color="black" class="color" style="background-color: #00FF00"></div></td>
+						<td><div color="black" class="color" style="background-color: #FF7F00	"></div></td>
+						<td><div color="black" class="color" style="background-color: #FF0000"></div></td>
+						<td><div color="white" class="color" style="background-color: #0000CD"></div></td>
+					</tr>
+					<tr>
+						<td><div color="black" class="color" style="background-color: #70DB93"></div></td>
+						<td><div color="black" class="color" style="background-color: #CAFF70"></div></td>
+						<td><div color="black" class="color" style="background-color: #FFFF00"></div></td>
+						<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
+					</tr>
+					<tr>
+						<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
+						<td><div color="white" class="color" style="background-color: #006400"></div></td>
+						<td><div color="white" class="color" style="background-color: #800080"></div></td>
+						<td><div color="white" class="color" style="background-color: grey"></div></td>
+					</tr>
+				</table>
+			</div>
+						
+			Layout
+			
+			<form>
+				<button type="button" onclick= "collapse()">Collapse!</button>
+				<button type="button" onclick= "expand()">Expand!</button>
+			</form>
+		
+			
 		</fieldset>
 		<fieldset>
 			<legend>Properties:</legend>
 			Rename: <input id="rename_text" type="text" name="change_name" maxlength="10"><button type="button" onclick= "rename()">Change</button>
 		</fieldset>
-
-		   <fieldset>
-			<legend> <img src="gearsettings.jpg" alt="gear for settings" width="42" height="42"> </legend>
-			Colors:
-			<div>
-							<table>
-								<tr>
-									<td><div color="black" class="color" style="background-color: #00FF00"></div></td>
-									<td><div color="black" class="color" style="background-color: #FF7F00	"></div></td>
-									<td><div color="black" class="color" style="background-color: #FF0000"></div></td>
-									<td><div color="white" class="color" style="background-color: #0000CD"></div></td>
-								</tr>
-								<tr>
-									<td><div color="black" class="color" style="background-color: #70DB93"></div></td>
-									<td><div color="black" class="color" style="background-color: #CAFF70"></div></td>
-									<td><div color="black" class="color" style="background-color: #FFFF00"></div></td>
-									<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
-								</tr>
-								<tr>
-									<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
-									<td><div color="white" class="color" style="background-color: #006400"></div></td>
-									<td><div color="white" class="color" style="background-color: #800080"></div></td>
-									<td><div color="white" class="color" style="background-color: #666"></div></td>
-								</tr>
-							</table>
-						</div>
-			Layout
-			
-				<form>
-				<button type="button" onclick= "collapse()">Collapse!</button>
-				<button type="button" onclick= "expand()">Expand!</button>
-				</form>
-			
-			
-		  </fieldset>
-
 	
 	</div>
 	
