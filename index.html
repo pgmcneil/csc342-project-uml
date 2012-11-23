@@ -106,11 +106,14 @@
 			});
 			$("#canvas").on("click", ".object .minimize", function(e){
 				if($(this).parent().parent().find(".content").is(":visible")){
-					$(this).parent().parent().find(".content").slideUp();
+					$(this).parent().parent().find(".content").slideUp(function(){
+						$(this).parent().find(".header").css("border-radius", "5px");
+					});
 					//Show maximize button
 					$(this).html("&#9633;");
 				}else{
-					$(this).parent().parent().find(".content").show("slow");
+					$(this).parent().css("border-radius", "5px 5px 0 0");						
+					$(this).parent().parent().find(".content").slideDown();
 					//Show Minimize button
 					$(this).html("_");
 				}
@@ -242,12 +245,14 @@
 			
 		}
 		span {
+/* 
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+ */
 		}
 		
 		#canvas{
@@ -301,7 +306,7 @@
 		}
 		.object .minimize:hover{
 			top: 10%;
-			background: rgb(200,10,10);
+			background: rgb(10,10,200);
 		}
 		.object .objectTitle{
 			position: absolute;
@@ -320,7 +325,7 @@
 		}
 		.object .delete:hover{
 			top: 10%;
-			background: rgb(200,10,10);
+			background: rgb(10,10,200);
 		}
 		.object .content {
 			cursor: default;
@@ -345,6 +350,16 @@
 			background: -webkit-linear-gradient(top, #f85032 0%,#f16f5c 50%,#f6290c 51%,#f02f17 71%,#e73827 100%); /* Chrome10+,Safari5.1+ */
 			
 		}
+		.selectedObject .delete:hover{
+			top: 10%;
+			background: rgb(200,10,10);
+
+		}
+		.selectedObject .minimize:hover{
+			top: 10%;
+			background: rgb(200,10,10);
+
+		}
 		
 		#toolbox{
 		 
@@ -355,13 +370,10 @@
 		    margin-left: 2px;
 			display:inline-block;
 		}
-		.color{
-		
+		.color{		
 			width: 20px;
 			height: 20px;
 			margin:left;
-	   
-
 		}
 		.color:hover{
 		border: 1px solid #3399CC;
