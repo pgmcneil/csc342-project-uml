@@ -43,7 +43,7 @@
 								<span class="minimize">_</span> \
 								<span class="delete">X</span> \
 							</div>	\
-							<div class="content" contenteditable="true">	\
+							<div class="content">	\
 								<table> \
 									<tr><td>Sample attribute</tr> \
 								</table> \
@@ -71,9 +71,21 @@
 					return id;
 				}
 			}
+			function addAttribute() {
+				$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
+				editAttribute($(".object.selectedObject .content tbody tr:last td"));
+			}
+			function editAttribute(cell) {
+				cell.html('<input type="text" value="' + cell.html() + '" />');
+				cell.find("input").focus().css("width", $(".object.selectedObject .content").width() - 20);
+			}
 			
-			
-			
+			function recordAttribute(input) {
+				input.parent().html(input.val());
+			}
+			function removeAttribute(input) {
+				input.parent().parent().remove();
+			}
 			//hold value for zindex bring to front
 			front = 0;
 /*
@@ -169,17 +181,43 @@
 //			$(document).on("click", ".settings-menu", function(e) {
 //				e.stopPropagation();
 //			});
+
 			$(document).on("click", ".color", function() {
 			var color = $(this).css("background-color");
 				$(".selectedObject .content").css("background-color", color);
 			   $(".selectedObject .content").css("color", $(this).attr("color"));
 				
 			});
-			$(document).on("click", ".object .content", function(e) {
-				$(this).focus();
+			$(document).on("click", ".object .content td", function(e) {
+				e.stopPropagation();
+				editAttribute($(this));
+			});
+			$(document).on("click", ".object .content td input", function(e) {
 				e.stopPropagation();
 			});
-			$(document).on("mousemove", ".object .content", function(e) {
+			$(document).on("focusout", ".object .content input", function(e) {
+				if($(this).val().length > 0) {
+					recordAttribute($(this));
+				} else {
+					removeAttribute($(this));
+				}
+			});
+			$(document).on("keypress", ".object .content input:focus", function(e) {
+				if(e.which == 13) {
+					addAttribute();
+				}
+			}).on("keydown", ".object .content input:focus", function(e) {
+				if(e.which == 8 && $(this).val().length == 0) {
+					e.preventDefault();
+					var cells = $(".object.selectedObject .content tbody tr td:not(:has(input))");
+					editAttribute($(cells[cells.length - 1]));
+				}
+			});
+			$(document).on("click", ".object.selectedObject .content", function(e) {
+				e.stopPropagation();
+				addAttribute();
+			});
+			$(document).on("mousedown", ".object .content td", function(e) {
 				e.stopPropagation();
 			});
 		});
@@ -190,6 +228,12 @@
 	
 		body,html{
   			height:98%;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
 		}
 		div{
 			display: inline-block;
@@ -263,12 +307,6 @@
 			position: absolute;
 			top: 15%;	
 			left:30%;
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
 		}
 		.object .delete{
 			position: relative;
