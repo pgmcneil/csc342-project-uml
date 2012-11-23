@@ -6,33 +6,60 @@
 	<script>
 	
 			function collapse(){
-			    $(".selectedObject .content").slideUp();
+				var obj = (this === window) ? $(".selectedObject") : $(this);
+				$(obj).find(".content").slideUp(function(){
+					$(this).parent().find(".header").css("border-radius", "5px");
+					$(this).parent().find(".minimize").html("&#9633;");
+				});
+				if(obj.attr("id") === $(".selectedObject").attr("id")){
+					//Change button visibility
+					$("#toggleMinimize").html('Expand');
+				}
+			}
+			
+			function expand(){
+				var obj = (this === window) ? $(".selectedObject") : $(this);
+				obj.find(".header").css("border-radius", "5px 5px 0 0");						
+				obj.find(".content").slideDown(function(){
+						$(this).parent().find(".minimize").html("_");
+				});
+				if(obj.attr("id") === $(".selectedObject").attr("id")){
+					//Change button visibility
+					$("#toggleMinimize").html('Collapse');
+				}
+
 			}
 			
 			function collapseAll() {
-				$(".object .content").each(function() {
-					$(this).slideUp();
+				$(".object").each(function() {
+					collapse.call(this);
 				});
 			}			
 			
 			function expandAll() {
-				$(".object .content").each(function() {
-					$(this).show("slow");
+				$(".object").each(function() {
+					expand.call(this);
 				});
 			}
-			
-			function expand(){
-				$(".selectedObject .content").show("slow");
-			}
 	
+			function toggleMinimize(){
+				var obj = (this === window) ? $(".selectedObject") : $(this);
+				if(obj.find(".content").is(":visible")){
+					//alert("should collapse.");
+					collapse.call(obj);
+				}else{
+					expand.call(obj);
+				}
+
+			
+			}
+		
 			function rename() {
 				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
 			}
 			
 			function clearAll() {
-				$(".object").each(function() {
-					$(this).remove();
-				});
+				$(".object").remove();
 			}
 	
 		$(document).ready(function() {
@@ -45,24 +72,44 @@
 							</div>	\
 							<div class="content">	\
 								<table> \
-									<tr><td>Sample attribute</tr> \
+									<tr><td>Sample attribute</td></tr> \
 								</table> \
 							</div>\
 						</div>';
 					
 			};
-			function createSettingsMenu(id) {
-				return '<div class="settings-menu" reference="' + id + '"> \
-					<div class="settings-content"> \
+			function createColorsMenu(id) {
+				return '<div class="color-chooser" > \
+					<div class="colors"> \
+						<table> \
+							<tr> \
+								<td><div color="black" class="color" style="background-color: #00FF00"></div></td> \
+								<td><div color="black" class="color" style="background-color: #FF7F00	"></div></td> \
+								<td><div color="black" class="color" style="background-color: #FF0000"></div></td> \
+							</tr> \
+							<tr> \
+								<td><div color="white" class="color" style="background-color: #0000CD"></div></td> \
+								<td><div color="black" class="color" style="background-color: #70DB93"></div></td> \
+								<td><div color="black" class="color" style="background-color: #CAFF70"></div></td> \
+							</tr> \
+							<tr> \
+								<td><div color="black" class="color" style="background-color: #FFFF00"></div></td> \
+								<td><div color="white" class="color" style="background-color: #236B8E"></div></td> \
+								<td><div color="white" class="color" style="background-color: #236B8E"></div></td> \
+							</tr> \
+							<tr> \
+								<td><div color="white" class="color" style="background-color: #006400"></div></td> \
+								<td><div color="white" class="color" style="background-color: #800080"></div></td> \
+								<td><div color="white" class="color" style="background-color: grey"></div></td> \
+							</tr> \
+						</table> \
            			</div> \
 					<div class="prong"></div> \
 					</div>';
 			}
 			function removeSettings() {
-				$(".settings-menu").remove();
-			}
-			
-		
+				$(".color-chooser").remove();
+			}		
 			
 			function checkID(id) {
 				if(document.getElementById("object"+id)) {
@@ -71,6 +118,7 @@
 					return id;
 				}
 			}
+			
 			function addAttribute() {
 				$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
 				editAttribute($(".object.selectedObject .content tbody tr:last td"));
@@ -105,26 +153,23 @@
 					$(this).parent().parent().remove();
 			});
 			$("#canvas").on("click", ".object .minimize", function(e){
-				if($(this).parent().parent().find(".content").is(":visible")){
-					$(this).parent().parent().find(".content").slideUp(function(){
-						$(this).parent().find(".header").css("border-radius", "5px");
-						$(this).parent().find(".minimize").html("&#9633;");
-					});
-				}else{
-					$(this).parent().css("border-radius", "5px 5px 0 0");						
-					$(this).parent().parent().find(".content").slideDown(function(){
-						//Show Minimize button
-						$(this).parent().find(".minimize").html("_");
-					});
-				}
+				toggleMinimize.call($(this).parent().parent());
+				e.stopPropagation();
 			});
-
+			$("#canvas").on("mousedown", ".object .minimize", function(e){
+				e.stopPropagation();
+			});
+			$("#canvas").on("mousedown", ".object .delete", function(e){
+				e.stopPropagation();
+			});
 			$("#canvas").on("dblclick", ".object", function(e){
 				e.stopImmediatePropagation();
 				return true;					
 			});
 			$("#canvas").on("mousedown", ".object", function(e){
 				removeSettings();
+				
+				
 				// //Bring to Front
 				if($(this).css("z-index") != front){
 					$(this).css("z-index", ++front);
@@ -134,7 +179,11 @@
 				//Toggle Selected
 				$(".selectedObject").removeClass("selectedObject");
 				$(this).addClass("selectedObject");
+				
+				
 				$('#rename_text').val($(this).find(".objectTitle").html());
+				$('#selectedColor').css("background-color", $(this).find(".content").css("background-color"));
+				
 			});
 			
 			
@@ -160,35 +209,37 @@
 					.draggable({containment: "parent"})
 					.trigger("mousedown");
 			});
-// 			$(document).on("click", ".settings", function(e) {
-// 				e.stopPropagation();
-// 				if($(".settings-menu").length != 0) {
+			$("#toolbox").on("click", "#selectedColor", function(e) {
+				e.stopPropagation();
+				// if($(".settings-menu").length != 0) {
 // 					return;
 // 				}
-// 				var object = $(this).parent().parent();
-// 				var settings = createSettingsMenu(object.attr("id"));
-// 				$("#canvas").append(settings);
-// 				var xPos = object.offset().left;
-// 				var yPos = object.offset().top - $(".settings-menu").height() - 20;
-// 				if(yPos < $("#canvas").offset().top) {
+				//var object = $(this).parent().parent();
+				//alert($("selectedObject").attr("id"));
+				var settings = createColorsMenu();
+				$("#toolbox").append(settings);
+				var xPos = $("#selectedColor").offset().left;
+				var yPos = $("#selectedColor").offset().top + $("#selectedColor").height();
+				// if(yPos < $(document).offset().top) {
 // 					yPos = object.offset().top + object.height() + 20;
 // 				}
-// 				$(".settings-menu").offset({
-// 					top: yPos,
-// 					left: xPos
-// 				});
-// 			});
-// 			$(document).on("click", function() {
-// 				$(".settings-menu").remove();
-// 			});
-//			$(document).on("click", ".settings-menu", function(e) {
-//				e.stopPropagation();
-//			});
+				$(".color-chooser").offset({
+					top: yPos,
+					left: xPos
+				});
+			});
+			$(document).on("click", function() {
+				$(".color-chooser").remove();
+			});
+			$(document).on("click", ".color-chooser", function(e) {
+				e.stopPropagation();
+			});
 
 			$(document).on("click", ".color", function() {
-			var color = $(this).css("background-color");
+				var color = $(this).css("background-color");
 				$(".selectedObject .content").css("background-color", color);
-			   $(".selectedObject .content").css("color", $(this).attr("color"));
+				$(".selectedObject .content").css("color", $(this).attr("color"));
+				$('#selectedColor').css("background-color", color);
 				
 			});
 			$(document).on("click", ".object .content td", function(e) {
@@ -329,11 +380,11 @@
 		}
 		.object .content {
 			cursor: default;
-			height: 180px;
+			height: 150px;
 			width: 100%;
 			margin: 0px;
 			border-radius: 0 0 7px 7px; 
-			background: grey;
+			background-color: grey;
 			color: white;
 		}
 		.object:hover {
@@ -370,6 +421,13 @@
 		    margin-left: 2px;
 			display:inline-block;
 		}
+		#selectedColor{
+			position: relative;
+			width: 20px;
+			height: 20px;
+			margin-left: 5px;
+/* 			background: black; */
+		}
 		.color{		
 			width: 20px;
 			height: 20px;
@@ -380,9 +438,9 @@
 		
 		
 		}
-		.settings-menu {
-			width: 200px;
-			height: 100px;
+		.color-chooser {
+			width: 90px;
+			height: 110px;
 			background-color: #fff;
 			border: 1px solid #ccc;	
 			border-radius: 10px;
@@ -390,8 +448,13 @@
 			-moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.3);
 			box-shadow:         0px 0px 8px rgba(0,0,0,0.3);
 		}
-		.settings-menu .settings-content {
-			margin: 10px;
+		.color-chooser .colors {
+ 
+			margin: 5px;
+			margin-top:12px;
+		}
+		.colors td div{
+			margin-left:4px;
 		}
 		#rename_text{
 			width:100%;
@@ -415,43 +478,16 @@
 				<button type="button" onclick= "collapseAll()">Collapse All</button><br/>
 				<button type="button" onclick= "expandAll()">Expand All</button>
 		</fieldset>
-		
-
+		 
 		<fieldset>
 			<legend> <img src="gearsettings.jpg" alt="gear for settings" width="42" height="42"> </legend>
-			Colors:
-			<div>
-				<table>
-					<tr>
-						<td><div color="black" class="color" style="background-color: #00FF00"></div></td>
-						<td><div color="black" class="color" style="background-color: #FF7F00	"></div></td>
-						<td><div color="black" class="color" style="background-color: #FF0000"></div></td>
-						<td><div color="white" class="color" style="background-color: #0000CD"></div></td>
-					</tr>
-					<tr>
-						<td><div color="black" class="color" style="background-color: #70DB93"></div></td>
-						<td><div color="black" class="color" style="background-color: #CAFF70"></div></td>
-						<td><div color="black" class="color" style="background-color: #FFFF00"></div></td>
-						<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
-					</tr>
-					<tr>
-						<td><div color="white" class="color" style="background-color: #236B8E"></div></td>
-						<td><div color="white" class="color" style="background-color: #006400"></div></td>
-						<td><div color="white" class="color" style="background-color: #800080"></div></td>
-						<td><div color="white" class="color" style="background-color: grey"></div></td>
-					</tr>
-				</table>
-			</div>
-						
-			Layout
-			
-			<form>
-				<button type="button" onclick= "collapse()">Collapse!</button>
-				<button type="button" onclick= "expand()">Expand!</button>
-			</form>
-		
-			
+			Color:
+			<div id="selectedColor"></div>
+			<br />			
+			<button type="button" id="toggleMinimize" onclick="toggleMinimize()">Toggle!</button>
+					
 		</fieldset>
+		
 		<fieldset>
 			<legend>Properties:</legend>
 			Rename: <input id="rename_text" type="text" name="change_name" maxlength="10"><button type="button" onclick= "rename()">Change</button>
