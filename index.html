@@ -124,8 +124,12 @@
 				editAttribute($(".object.selectedObject .content tbody tr:last td"));
 			}
 			function editAttribute(cell) {
-				cell.html('<input type="text" value="' + cell.html() + '" />');
-				cell.find("input").focus().css("width", $(".object.selectedObject .content").width() - 20);
+			
+				//Note: Setting the text after focusing
+				//moves the cursor to the end of the string
+				var curText = cell.html();
+				cell.html('<input type="text"  />');
+				cell.find("input").focus().val(curText).css("width", $(".object.selectedObject .content").width() - 20);
 			}
 			
 			function recordAttribute(input) {
@@ -141,10 +145,10 @@
  * 
  */
 			//Properties Listener
-			/*$("#rename_text").change(function() {
+			$("#rename_text").change(function() {
 				console.log("fired");
-				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
-			});*/
+				$(".selectedObject .objectTitle").html($('#rename_text').val());
+			});
 			$("#rename_button").on("click", function(){
 				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
 				//alert(document.getElementById('rename_text').value);
@@ -235,7 +239,7 @@
 				e.stopPropagation();
 			});
 
-			$(document).on("click", ".color", function() {
+			$(document).on("click", ".color", function(e){
 				var color = $(this).css("background-color");
 				$(".selectedObject .content").css("background-color", color);
 				$(".selectedObject .content").css("color", $(this).attr("color"));
@@ -295,15 +299,13 @@
 			vertical-align: top;
 			
 		}
-		span {
-/* 
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
- */
+		input {
+			-webkit-touch-callout: default;
+			-webkit-user-select: default;
+			-khtml-user-select: default;
+			-moz-user-select: default;
+			-ms-user-select: default;
+			user-select: default;
 		}
 		
 		#canvas{
@@ -421,6 +423,12 @@
 		    margin-left: 2px;
 			display:inline-block;
 		}
+		#globalSettings{
+			text-align: center;
+		}
+		#globalSettings button{
+			width: 100px;
+		}
 		#selectedColor{
 			position: relative;
 			width: 20px;
@@ -456,6 +464,9 @@
 		.colors td div{
 			margin-left:4px;
 		}
+		#objectProperties{
+			height:150px;
+		}
 		#rename_text{
 			width:100%;
 		}
@@ -472,14 +483,14 @@
 	
 	<div id="canvas"></div>
 	<div id="toolbox">
-		<fieldset>
+		<fieldset id="globalSettings">
 			<legend>Global Settings:</legend>
 				<button type="button" onclick= "clearAll()">Clear All</button><br/>
 				<button type="button" onclick= "collapseAll()">Collapse All</button><br/>
 				<button type="button" onclick= "expandAll()">Expand All</button>
 		</fieldset>
 		 
-		<fieldset>
+		<fieldset id="objectSettings">
 			<legend> <img src="gearsettings.jpg" alt="gear for settings" width="42" height="42"> </legend>
 			Color:
 			<div id="selectedColor"></div>
@@ -488,9 +499,9 @@
 					
 		</fieldset>
 		
-		<fieldset>
+		<fieldset id="objectProperties">
 			<legend>Properties:</legend>
-			Rename: <input id="rename_text" type="text" name="change_name" maxlength="10"><button type="button" onclick= "rename()">Change</button>
+			Name: <input id="rename_text" type="text" name="change_name" maxlength="10">
 		</fieldset>
 	
 	</div>
