@@ -72,7 +72,7 @@
 							</div>	\
 							<div class="content">	\
 								<table> \
-									<tr><td>Sample attribute</td></tr> \
+									<tr><td class="attribute">Sample attribute</td><td class="relation">o</td></tr> \
 								</table> \
 							</div>\
 						</div>';
@@ -120,8 +120,8 @@
 			}
 			
 			function addAttribute() {
-				$(".object.selectedObject .content tbody").append('<tr><td></td></tr>');
-				editAttribute($(".object.selectedObject .content tbody tr:last td"));
+				$(".object.selectedObject .content tbody").append('<tr><td class="attribute"></td><td class="relation">o</td></tr>');
+				editAttribute($(".object.selectedObject .content tbody tr:last td.attribute"));
 			}
 			function editAttribute(cell) {
 			
@@ -140,6 +140,9 @@
 			}
 			//hold value for zindex bring to front
 			front = 0;
+			isSelecting = false;
+			relationSource = null;
+			allRelationships = [];
 /*
  * LISTENERS
  * 
@@ -246,9 +249,27 @@
 				$('#selectedColor').css("background-color", color);
 				
 			});
-			$(document).on("click", ".object .content td", function(e) {
+			$(document).on("click", ".object .content td.attribute", function(e) {
 				e.stopPropagation();
 				editAttribute($(this));
+			});
+			$(document).on("click", ".object .content td.relation", function(e) {
+				e.stopPropagation();
+				if(isSelecting && ($(this)[0] === relationSource[0])) {
+					return;
+				} else	if(isSelecting) {
+					// connect the arrow here
+					// relationSource.offset().top , relationSource.offset().left
+					// to
+					// $(this).offset().top , $(this).offset().left
+					allRelationships.push({source: relationSource, target: $(this)});
+					isSelecting = false;
+					delete relationSource;
+					console.log(allRelationships);
+				} else {
+					isSelecting = true;
+					relationSource = $(this);
+				}
 			});
 			$(document).on("click", ".object .content td input", function(e) {
 				e.stopPropagation();
@@ -267,7 +288,7 @@
 			}).on("keydown", ".object .content input:focus", function(e) {
 				if(e.which == 8 && $(this).val().length == 0) {
 					e.preventDefault();
-					var cells = $(".object.selectedObject .content tbody tr td:not(:has(input))");
+					var cells = $(".object.selectedObject .content tbody tr td.attribute:not(:has(input))");
 					editAttribute($(cells[cells.length - 1]));
 				}
 			});
@@ -388,6 +409,10 @@
 			border-radius: 0 0 7px 7px; 
 			background-color: grey;
 			color: white;
+		}
+		.object .content td.relation {
+			text-align: right;
+			width: 10px;
 		}
 		.object:hover {
 			cursor: move;
