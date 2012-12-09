@@ -272,7 +272,7 @@
 					// relationSource.offset().top , relationSource.offset().left
 					// to
 					// $(this).offset().top , $(this).offset().left
-					paper.arrow(relationSource.offset().left,relationSource.offset().top, $(this).offset().left, $(this).offset().top, 8);
+					paper.arrow(relationSource.offset().left-1,relationSource.offset().top+5, $(this).offset().left+2, $(this).offset().top+8, 8);
 					allRelationships.push({source: relationSource, target: $(this)});
 					isSelecting = false;
 					delete relationSource;
