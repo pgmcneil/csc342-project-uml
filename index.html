@@ -3,6 +3,7 @@
 <head>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+	<script src="raphael-min.js"></script>
 	<script>
 	
 			function collapse(){
@@ -61,7 +62,13 @@
 			function clearAll() {
 				$(".object").remove();
 			}
-	
+		Raphael.fn.arrow = function (x1, y1, x2, y2, size) {
+			var angle = Math.atan2(x1-x2,y2-y1);
+			angle = (angle / (2 * Math.PI)) * 360;
+			var arrowPath = this.path("M" + x2 + " " + y2 + " L" + (x2  - size) + " " + (y2  - size) + " L" + (x2  - size)  + " " + (y2  + size) + " L" + x2 + " " + y2 ).attr("fill","black").rotate((90+angle),x2,y2);
+			var linePath = this.path("M" + x1 + " " + y1 + " L" + x2 + " " + y2);
+			return [linePath,arrowPath];
+		};
 		$(document).ready(function() {
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
@@ -143,6 +150,9 @@
 			isSelecting = false;
 			relationSource = null;
 			allRelationships = [];
+			
+			// Create the paper so that arrows can draw:
+			var paper = new Raphael("canvas", 50, 50);
 /*
  * LISTENERS
  * 
@@ -262,6 +272,8 @@
 					// relationSource.offset().top , relationSource.offset().left
 					// to
 					// $(this).offset().top , $(this).offset().left
+					console.log(relationSource.offset().top+ "," +  relationSource.offset().left+ "," +  $(this).offset().top+ "," +  $(this).offset().left);
+					paper.arrow(relationSource.offset().top, relationSource.offset().left, $(this).offset().top, $(this).offset().left, 8);
 					allRelationships.push({source: relationSource, target: $(this)});
 					isSelecting = false;
 					delete relationSource;
@@ -500,7 +512,10 @@
 			width: 10px;
 			border: 1px solid black;
 		}
-
+		svg {
+			height: 100%;
+			width: 100%;
+		}
 	</style>
 </head>
 
