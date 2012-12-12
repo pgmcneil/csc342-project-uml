@@ -229,10 +229,7 @@
 			$("#canvas").on("mouseup", ".object", function(e) {
 				for(i = 0; i < allRelationships.length; i++) {
 					relationshipObjectSource = allRelationships[i].source.closest(".object");
-					console.log($.data(relationshipObjectSource));
 					relationshipObjectTarget = allRelationships[i].target.closest(".object");
-					console.log(relationshipObjectTarget.attr("id"));
-					console.log($.data($(this)));
 					if (relationshipObjectSource.attr("id") == $(this).attr("id") || relationshipObjectTarget.attr("id") == $(this).attr("id")) {
 						allRelationships[i].arrow.forEach(function(value, index, array) {
 							value.remove();
