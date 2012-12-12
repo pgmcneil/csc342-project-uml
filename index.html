@@ -63,10 +63,34 @@
 				$(".object").remove();
 			}
 		Raphael.fn.arrow = function (x1, y1, x2, y2, size) {
-			var angle = Math.atan2(x1-x2,y2-y1);
-			angle = (angle / (2 * Math.PI)) * 360;
-			var arrowPath = this.path("M" + x2 + " " + y2 + " L" + (x2  - size) + " " + (y2  - size) + " L" + (x2  - size)  + " " + (y2  + size) + " L" + x2 + " " + y2 ).attr("fill","black").rotate((90+angle),x2,y2);
-			var linePath = this.path("M" + x1 + " " + y1 + " L" + x2 + " " + y2);
+			var angle = -90;
+			var width = $(".object").width();
+			var offset = 0;
+			var target = 20;
+			var arrowPath;
+			var linePath;
+			if ((Math.abs(x1 - x2)) < width) {
+				angle = 90;
+				offset = 40;
+				x2 += 12;
+				x1 += 12;
+				arrowPath = this.path("M" + x2 + " " + y2 + " L" + (x2  - size) + " " + (y2  - size) + " L" + (x2  - size)  + " " + (y2  + size) + " L" + x2 + " " + y2 ).attr("fill","black").rotate((90+angle),x2,y2);
+				linePath = this.path("M" + x1 + " " + y1 + " L" + (x1 + offset) + " " + y1 + " L" + (x1 + offset) + " " + y2 + " L" + x2 + " " + y2);
+			} else	if (x1 < x2) {
+				x2 -= width;
+				x1 += 12;
+				offset = Math.abs(x1 - x2) / 2;
+				arrowPath = this.path("M" + x2 + " " + y2 + " L" + (x2  - size) + " " + (y2  - size) + " L" + (x2  - size)  + " " + (y2  + size) + " L" + x2 + " " + y2 ).attr("fill","black").rotate((90+angle),x2,y2);
+				linePath = this.path("M" + x1 + " " + y1 + " L" + (x1 + offset) + " " + y1 + " L" + (x1 + offset) + " " + y2 + " L" + x2 + " " + y2);
+			} else if (x2 < x1) {
+				x1 -= width;
+				offset = Math.abs(x1 - x2) / 2;
+				x2 += 12;
+				angle = 90;
+				offset *= -1;
+				arrowPath = this.path("M" + x2 + " " + y2 + " L" + (x2  - size) + " " + (y2  - size) + " L" + (x2  - size)  + " " + (y2  + size) + " L" + x2 + " " + y2 ).attr("fill","black").rotate((90+angle),x2,y2);
+				linePath = this.path("M" + x1 + " " + y1 + " L" + (x1 + offset) + " " + y1 + " L" + (x1 + offset) + " " + y2 + " L" + x2 + " " + y2);
+			}
 			return [linePath,arrowPath];
 		};
 		$(document).ready(function() {
@@ -272,7 +296,7 @@
 					// relationSource.offset().top , relationSource.offset().left
 					// to
 					// $(this).offset().top , $(this).offset().left
-					var relationArrow = paper.arrow(relationSource.offset().left-1,relationSource.offset().top+5, $(this).offset().left+2, $(this).offset().top+8, 8);
+					var relationArrow = paper.arrow(relationSource.offset().left - 1,relationSource.offset().top + 5, $(this).offset().left + 2, $(this).offset().top + 8, 8);
 					allRelationships.push({source: relationSource, target: $(this), arrow: relationArrow});
 					isSelecting = false;
 					delete relationSource;
