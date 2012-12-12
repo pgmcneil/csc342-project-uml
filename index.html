@@ -96,7 +96,7 @@
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
 							<div class="header">	\
-								<span class="objectTitle">Object ' + id + '</span> \
+								<div class="objectTitle">Object ' + id + '</div> \
 								<span class="minimize">_</span> \
 								<span class="delete">X</span> \
 							</div>	\
@@ -211,6 +211,34 @@
 				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
 				//alert(document.getElementById('rename_text').value);
 			});
+			$("#canvas").on("dblclick", ".object .objectTitle", function(e){
+				var title = $(this);
+				var curText = title.html();
+				
+				title.html('<input type="text" />');
+				title.find("input").focus().val(curText).css("width", 60 );
+			});
+			$("#canvas").on("dblclick", ".object .objectTitle input", function(e) {
+				e.stopPropagation();
+			});
+			$("#canvas").on("mousedown", ".object .objectTitle input", function(e) {
+				e.stopPropagation();
+			});
+			$("#canvas").on("focusout", ".object .objectTitle input", function(e) {
+				if($(this).val().length > 0) {
+					recordAttribute($(this));
+				} else {
+					var title = 'Object ' + $(this).parents(".object").attr("id").charAt(6);
+					//alert("There's nothing in the input! id: " + $(this).parents(".object").attr("id"));
+					$(this).parent().html(title);
+				}
+			});
+			$("#canvas").on("keypress", ".object .objectTitle input:focus", function(e) {
+				if(e.which == 13) {
+					recordAttribute($(this));
+				}
+			});
+			
 			$("#canvas").on("click", ".object .delete", function(e){
 				$(this).parent().parent().remove();
 				deleteRelation($(this).closest(".object"));
@@ -274,8 +302,10 @@
 						top: yPos,
 						left: xPos
 					})
-					.draggable({containment: "parent"})
+					.draggable({containment: "parent", grid: [ 20,20 ] })
 					.trigger("mousedown");
+				//Select the attribute to begin editing
+				//newObject.find(".content td").trigger("click");
 			});
 			$("#toolbox").on("click", "#selectedColor", function(e) {
 				e.stopPropagation();
@@ -404,7 +434,7 @@
    			-webkit-linear-gradient(left, rgba(0,0,0,.3) 2px, transparent 2px),
  			-webkit-linear-gradient(rgba(0,0,0,.3) 1px, transparent 1px),
 			-webkit-linear-gradient(left, rgba(0,0,0,.3) 1px, transparent 1px);
-			background-size:100px 100px, 100px 100px, 20px 20px, 20px 20px;
+			background-size:100px 100px, 100px 100px, 10px 10px, 10px 10px;
 			background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;
 		}
 		#canvas div {
@@ -414,7 +444,7 @@
 		.object {
 			width: 120px;
 			position: absolute;
-			opacity: 0.8;
+			opacity: 0.9;
 			border: 2px solid blue;	
 			border-radius: 10px;
 
@@ -430,7 +460,7 @@
 			background:blue;
 			height:25px;
 			width:100%;	
-		
+			text-align: center;
 		}
 		.object .minimize {
 			position: relative;
@@ -448,9 +478,14 @@
 			background: rgb(10,10,200);
 		}
 		.object .objectTitle{
-			position: absolute;
+			position: relative;
 			top: 15%;	
-			left:30%;
+			margin: 0px;
+			max-width: 60px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		//	left:25%;
 		}
 		.object .delete{
 			position: relative;
@@ -504,11 +539,11 @@
 
 		}
 		
-		#toolbox{
-		 
+		#toolbox{ 
 			height:100%;
 			width:14%;
-			vertical-align: top;
+			max-width: 190px;
+			/*vertical-align: top;*/
 			border: 2px solid black;
 		    margin-left: 2px;
 			display:inline-block;
@@ -556,6 +591,8 @@
 		}
 		#objectProperties{
 			height:150px;
+			position: relative;
+			bottom: 0px;
 		}
 		#rename_text{
 			width:100%;
