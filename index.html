@@ -149,6 +149,17 @@
 				}
 			}
 			
+			function updateAttributesTable() {
+				$("#objectAttributes .attributes").remove();
+				$(".selectedObject .attribute").each(function() {					
+					$("#objectAttributes").append('<tr class="attributes"><td>' + $(this).html() + '</td><td><input type="text" name="change_type" maxlength="10"></td><td><input type="text" name="change_comment" maxlength="10"></td>');
+				});
+			}
+			
+			function updateAttributesObject() {
+				
+			}
+			
 			function addAttribute() {
 				$(".object.selectedObject .content tbody").append('<tr><td class="attribute"></td><td class="relation">o</td></tr>');
 				editAttribute($(".object.selectedObject .content tbody tr:last td.attribute"));
@@ -164,9 +175,11 @@
 			
 			function recordAttribute(input) {
 				input.parent().html(input.val());
+				updateAttributesTable();
 			}
 			function removeAttribute(input) {
 				input.parent().parent().remove();
+				updateAttributesTable();
 			}
 			//hold value for zindex bring to front
 			front = 0;
@@ -231,7 +244,7 @@
 			});
 			$("#canvas").on("mousedown", ".object", function(e){
 				removeSettings();
-				
+				updateAttributesTable();
 				
 				// //Bring to Front
 				if($(this).css("z-index") != front){
@@ -595,6 +608,17 @@
 		<fieldset id="objectProperties">
 			<legend>Properties:</legend>
 			Name: <input id="rename_text" type="text" name="change_name" maxlength="10">
+		</fieldset>
+		
+		<fieldset>
+			<legend>Attributes:</legend>
+			<table id="objectAttributes">
+				<tr>
+					<th>Attribute</th>
+					<th>Type</th>
+					<th>Comment</th>
+				</tr>
+			</table>
 		</fieldset>
 	
 	</div>
