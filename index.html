@@ -196,18 +196,16 @@
 			}
 			
 			function deleteRelation(object) {
-				console.log(allRelationships);
 				for(i = 0; i < allRelationships.length; i++) {
-					console.log(i);
 					relationshipObjectSource = allRelationships[i].source.closest(".object");
 					relationshipObjectTarget = allRelationships[i].target.closest(".object");
 					if (relationshipObjectSource.attr("id") == object.attr("id") || relationshipObjectTarget.attr("id") == object.attr("id")) {
 						paper.removeArrow(allRelationships[i].arrow);
-						allRelationships.splice(allRelationships, i);
+						allRelationships.splice(i, 1);
+						deleteRelation(object);
+						break;
 					}
 				}
-				isSelecting = false;
-				console.log(allRelationships);
 			}
 /*
  * LISTENERS
