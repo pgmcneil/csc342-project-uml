@@ -93,6 +93,12 @@
 			}
 			return [linePath,arrowPath];
 		};
+		Raphael.fn.removeArrow = function (arrow) {
+			arrow.forEach(function(value, index, array) {
+				value.remove();
+			});
+		};
+		
 		$(document).ready(function() {
 			function objectTemplateWithID(id){
 				return '<div class="object" id="object'+ id +'"> \
@@ -177,6 +183,32 @@
 			
 			// Create the paper so that arrows can draw:
 			var paper = new Raphael("canvas", 50, 50);
+			function findMatchingRelations(object) {
+				var matching = [];
+				for(i = 0; i < allRelationships.length; i++) {
+					relationshipObjectSource = allRelationships[i].source.closest(".object");
+					relationshipObjectTarget = allRelationships[i].target.closest(".object");
+					if (relationshipObjectSource.attr("id") == object.attr("id") || relationshipObjectTarget.attr("id") == object.attr("id")) {
+						matching.push(allRelationships[i]);
+					}
+				}
+				return matching;
+			}
+			
+			function deleteRelation(object) {
+				console.log(allRelationships);
+				for(i = 0; i < allRelationships.length; i++) {
+					console.log(i);
+					relationshipObjectSource = allRelationships[i].source.closest(".object");
+					relationshipObjectTarget = allRelationships[i].target.closest(".object");
+					if (relationshipObjectSource.attr("id") == object.attr("id") || relationshipObjectTarget.attr("id") == object.attr("id")) {
+						paper.removeArrow(allRelationships[i].arrow);
+						allRelationships.splice(allRelationships, i);
+					}
+				}
+				isSelecting = false;
+				console.log(allRelationships);
+			}
 /*
  * LISTENERS
  * 
@@ -191,7 +223,8 @@
 				//alert(document.getElementById('rename_text').value);
 			});
 			$("#canvas").on("click", ".object .delete", function(e){
-					$(this).parent().parent().remove();
+				$(this).parent().parent().remove();
+				deleteRelation($(this).closest(".object"));
 			});
 			$("#canvas").on("click", ".object .minimize", function(e){
 				toggleMinimize.call($(this).parent().parent());
@@ -227,19 +260,12 @@
 				
 			});
 			$("#canvas").on("mouseup", ".object", function(e) {
-				for(i = 0; i < allRelationships.length; i++) {
-					relationshipObjectSource = allRelationships[i].source.closest(".object");
-					relationshipObjectTarget = allRelationships[i].target.closest(".object");
-					if (relationshipObjectSource.attr("id") == $(this).attr("id") || relationshipObjectTarget.attr("id") == $(this).attr("id")) {
-						allRelationships[i].arrow.forEach(function(value, index, array) {
-							value.remove();
-						});
-						var relationArrow = paper.arrow(allRelationships[i].source.offset().left - 1,allRelationships[i].source.offset().top + 5, allRelationships[i].target.offset().left + 2, allRelationships[i].target.offset().top + 8, 8);
-						allRelationships[i].arrow = relationArrow;
-					}
-				}
+				findMatchingRelations($(this)).forEach(function(value, index, array) {
+					paper.removeArrow(value.arrow);
+					var relationArrow = paper.arrow(value.source.offset().left - 1, value.source.offset().top + 5, value.target.offset().left + 2, value.target.offset().top + 8, 8);
+					value.arrow = relationArrow;
+				});
 			});
-			
 			
 			//When the document is double clicked, spawn an object
 			$("#canvas").on("dblclick", function(e) {
