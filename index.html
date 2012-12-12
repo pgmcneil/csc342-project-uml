@@ -102,7 +102,7 @@
 							</div>	\
 							<div class="content">	\
 								<table> \
-									<tr><td class="attribute">Sample attribute</td><td class="relation">o</td></tr> \
+									<tr><td class="attribute" row=0>Sample attribute</td><td class="relation">o</td></tr> \
 								</table> \
 							</div>\
 						</div>';
@@ -152,16 +152,20 @@
 			function updateAttributesTable() {
 				$("#objectAttributes .attributes").remove();
 				$(".selectedObject .attribute").each(function() {					
-					$("#objectAttributes").append('<tr class="attributes"><td>' + $(this).html() + '</td><td><input type="text" name="change_type" maxlength="10"></td><td><input type="text" name="change_comment" maxlength="10"></td>');
+					$("#objectAttributes").append('<tr class="attributes" row=' + $(this).attr("row") + '><td type="name">' + $(this).html() + '</td><td type="type"><input type="text" name="change_type" maxlength="10" value=' + $(this).data("type") + '></td><td type="comments"><input type="text" name="change_comment" maxlength="10"></td>');
 				});
 			}
 			
-			function updateAttributesObject() {
-				
+			function updateAttributesObject(row, name, type, comments) {
+				$(".selectedObject .attribute[row=\"" + row + "\"]").html(name); // Name
+				$(".selectedObject .attribute[row=\"" + row + "\"]").data("type", type); // Type
+				$(".selectedObject .attribute[row=\"" + row + "\"]").data("comments", comments); // Comments
+				console.log($(".selectedObject .attribute[row=\"" + row + "\"]").data());				
 			}
 			
 			function addAttribute() {
-				$(".object.selectedObject .content tbody").append('<tr><td class="attribute"></td><td class="relation">o</td></tr>');
+				var row = parseInt($(".object.selectedObject .content tbody tr:last .attribute").attr("row")) + 1;
+				$(".object.selectedObject .content tbody").append('<tr><td class="attribute" row=' + row + '></td><td class="relation">o</td></tr>');
 				editAttribute($(".object.selectedObject .content tbody tr:last td.attribute"));
 			}
 			function editAttribute(cell) {
@@ -373,6 +377,12 @@
 			$(document).on("mousedown", ".object .content td", function(e) {
 				e.stopPropagation();
 			});
+			
+			$(document).on("focusout", "#objectAttributes .attributes input", function() {
+				var row = $(this).closest("tr");
+				updateAttributesObject(row.attr("row"), row.find('td[type="name"]').html(), row.find('td[type="type"] input').val(), row.find('td[type="comments"] input').val());
+				
+			});	
 		});
 	</script>
 
