@@ -152,7 +152,7 @@
 			function updateAttributesTable() {
 				$("#objectAttributes .attributes").remove();
 				$(".selectedObject .attribute").each(function() {					
-					$("#objectAttributes").append('<tr class="attributes" row=' + $(this).attr("row") + '><td type="name">' + $(this).html() + '</td><td type="type"><input type="text" name="change_type" maxlength="10" value=' + $(this).data("type") + '></td><td type="comments"><input type="text" name="change_comment" maxlength="10"></td>');
+					$("#objectAttributes").append('<tr class="attributes" row=' + $(this).attr("row") + '><td type="name"><input value="' + $(this).html() + '" /></td><td type="type"><input type="text" name="change_type" maxlength="10" value=' + ($(this).data("type") ? $(this).data("type") : "") + '></td><td type="comments"><input type="text" name="change_comment" maxlength="10" value="default"></td>');
 				});
 			}
 			
@@ -380,7 +380,7 @@
 			
 			$(document).on("focusout", "#objectAttributes .attributes input", function() {
 				var row = $(this).closest("tr");
-				updateAttributesObject(row.attr("row"), row.find('td[type="name"]').html(), row.find('td[type="type"] input').val(), row.find('td[type="comments"] input').val());
+				updateAttributesObject(row.attr("row"), row.find('td[type="name"] input').val(), row.find('td[type="type"] input').val(), row.find('td[type="comments"] input').val());
 				
 			});	
 		});
@@ -591,6 +591,9 @@
 		svg {
 			height: 100%;
 			width: 100%;
+		}
+		#objectAttributes input {
+			width: 75px;
 		}
 	</style>
 </head>
