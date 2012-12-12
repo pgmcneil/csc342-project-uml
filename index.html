@@ -201,9 +201,7 @@
 					relationshipObjectTarget = allRelationships[i].target.closest(".object");
 					if (relationshipObjectSource.attr("id") == object.attr("id") || relationshipObjectTarget.attr("id") == object.attr("id")) {
 						paper.removeArrow(allRelationships[i].arrow);
-						allRelationships.splice(i, 1);
-						deleteRelation(object);
-						break;
+						allRelationships.splice(i--, 1);
 					}
 				}
 			}
@@ -256,8 +254,7 @@
 				$('#rename_text').val($(this).find(".objectTitle").html());
 				$('#selectedColor').css("background-color", $(this).find(".content").css("background-color"));
 				
-			});
-			$("#canvas").on("mouseup", ".object", function(e) {
+			}).on("mouseup", ".object", function(e) {
 				findMatchingRelations($(this)).forEach(function(value, index, array) {
 					paper.removeArrow(value.arrow);
 					var relationArrow = paper.arrow(value.source.offset().left - 1, value.source.offset().top + 5, value.target.offset().left + 2, value.target.offset().top + 8, 8);
