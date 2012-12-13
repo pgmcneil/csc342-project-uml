@@ -151,8 +151,12 @@
 			
 			function updateAttributesTable() {
 				$("#objectAttributes .attributes").remove();
-				$(".selectedObject .attribute").each(function() {					
-					$("#objectAttributes").append('<tr class="attributes" row=' + $(this).attr("row") + '><td type="name"><input value="' + $(this).html() + '" /></td><td type="type"><input type="text" name="change_type" maxlength="10" value=' + ($(this).data("type") ? $(this).data("type") : "") + '></td><td type="comments"><input type="text" name="change_comment" maxlength="10" value=' + ($(this).data("comments") ? $(this).data("comments") : "") + '></td>');
+				$(".selectedObject .attribute").each(function() {
+					var name = $(this).html();
+					if(name.indexOf("input") != -1) {
+						name = $(this).val();
+					}
+					$("#objectAttributes").append('<tr class="attributes" row=' + $(this).attr("row") + '><td type="name"><input value="' + name + '" /></td><td type="type"><input type="text" name="change_type" maxlength="10" value=' + ($(this).data("type") ? $(this).data("type") : "") + '></td><td type="comments"><input type="text" name="change_comment" maxlength="10" value=' + ($(this).data("comments") ? $(this).data("comments") : "") + '></td>');
 				});
 			}
 			
