@@ -74,10 +74,10 @@
 				var sqlOutput = '';
 				
 				$(".object").each(function(i){
-					sqlOutput += "CREATE TABLE " + $(this).find(".objectTitle").html() + "(\n";
+					sqlOutput += "CREATE TABLE " + $(this).find(".objectTitle").html().replace(" ", "_") + "(\n";
 					$(this).find(".attribute").each(function(){
 						//alert(this.innerHTML);
-						sqlOutput += "	" + this.innerHTML + ",\n";
+						sqlOutput += "	" + this.innerHTML.replace(" ", "_") + ",\n";
 					});
 					sqlOutput += ")\n";
 				});
