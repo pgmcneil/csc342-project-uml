@@ -155,7 +155,7 @@
 							</div>	\
 							<div class="content">	\
 								<table> \
-									<tr><td class="attribute">' + newObject.attributes[0].name + '</td><td class="relation">o</td></tr> \
+									<tr><td class="attribute" row=0>' + newObject.attributes[0].name + '</td><td class="relation">o</td></tr> \
 								</table> \
 							</div>\
 						</div>';
@@ -202,8 +202,27 @@
 				}
 			}
 			
+			function updateAttributesTable() {
+				$("#objectAttributes .attributes").remove();
+				$(".selectedObject .attribute").each(function() {
+					var name = $(this).html();
+					if(name.indexOf("input") != -1) {
+						name = $(this).val();
+					}
+					$("#objectAttributes").append('<tr class="attributes" row=' + $(this).attr("row") + '><td type="name"><input value="' + name + '" /></td><td type="type"><input type="text" name="change_type" maxlength="10" value=' + ($(this).data("type") ? $(this).data("type") : "") + '></td><td type="comments"><input type="text" name="change_comment" maxlength="10" value=' + ($(this).data("comments") ? $(this).data("comments") : "") + '></td>');
+				});
+			}
+			
+			function updateAttributesObject(row, name, type, comments) {
+				$(".selectedObject .attribute[row=\"" + row + "\"]").html(name); // Name
+				$(".selectedObject .attribute[row=\"" + row + "\"]").data("type", type); // Type
+				$(".selectedObject .attribute[row=\"" + row + "\"]").data("comments", comments); // Comments
+				console.log($(".selectedObject .attribute[row=\"" + row + "\"]").data());				
+			}
+			
 			function addAttribute() {
-				$(".object.selectedObject .content tbody").append('<tr><td class="attribute"></td><td class="relation">o</td></tr>');
+				var row = parseInt($(".object.selectedObject .content tbody tr:last .attribute").attr("row")) + 1;
+				$(".object.selectedObject .content tbody").append('<tr><td class="attribute" row=' + row + '></td><td class="relation">o</td></tr>');
 				editAttribute($(".object.selectedObject .content tbody tr:last td.attribute"));
 			}
 			function editAttribute(cell) {
@@ -218,9 +237,11 @@
 			function recordAttribute(input) {
 				//entities[input.parents(".object").attr("id")].attributes[]
 				input.parent().html(input.val());
+				updateAttributesTable();
 			}
 			function removeAttribute(input) {
 				input.parent().parent().remove();
+				updateAttributesTable();
 			}
 			//hold value for zindex bring to front
 			front = 0;
@@ -302,6 +323,7 @@
 			$("#canvas").on("click", ".object .delete", function(e){
 				$(this).parent().parent().remove();
 				deleteRelation($(this).closest(".object"));
+				updateAttributesTable();
 			});
 			$("#canvas").on("click", ".object .minimize", function(e){
 				toggleMinimize.call($(this).parent().parent());
@@ -319,7 +341,7 @@
 			});
 			$("#canvas").on("mousedown", ".object", function(e){
 				removeSettings();
-				
+				updateAttributesTable();
 				
 				// //Bring to Front
 				if($(this).css("z-index") != front){
@@ -450,6 +472,12 @@
 			$(document).on("mousedown", ".object .content td", function(e) {
 				e.stopPropagation();
 			});
+			
+			$(document).on("focusout", "#objectAttributes .attributes input", function() {
+				var row = $(this).closest("tr");
+				updateAttributesObject(row.attr("row"), row.find('td[type="name"] input').val(), row.find('td[type="type"] input').val(), row.find('td[type="comments"] input').val());
+				
+			});	
 		});
 	</script>
 
@@ -457,13 +485,25 @@
 	<style>
 	
 		body,html{
-  			height:98%;
+  			height:100%;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+		}
+		body {
+			margin: 0;
+			padding: 0 275px 0 0;
+		}
+		@media screen {
+			body > div#toolbox {
+				position: fixed;
+			}
+		}
+		* html body {
+			overflow: hidden;
 		}
 		div{
 			display: inline-block;
@@ -482,7 +522,7 @@
 		
 		#canvas{
 			height:100%;
-			width: 85%;
+			width: 100%;
 			display: inline-block;
 			border: 2px solid grey;
  			background-color:#fff;
@@ -496,6 +536,10 @@
 			-webkit-linear-gradient(left, rgba(0,0,0,.3) 1px, transparent 1px);
 			background-size:100px 100px, 100px 100px, 10px 10px, 10px 10px;
 			background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;
+		}
+		* html div#canvas {
+			height: 100%;
+			overflow: auto;
 		}
 		#canvas div {
 			display: inline-block;	
@@ -601,12 +645,11 @@
 		
 		#toolbox{ 
 			height:100%;
-			width:14%;
-			max-width: 190px;
-			/*vertical-align: top;*/
+			width:275px;
+			top: 0;
+			right: 0;
+			position: absolute;
 			border: 2px solid black;
-		    margin-left: 2px;
-			display:inline-block;
 		}
 		#globalSettings{
 			text-align: center;
@@ -666,13 +709,9 @@
 			height: 100%;
 			width: 100%;
 		}
-		
-		#output{
-			height: 100%;
-			width: 500px;
-		
+		#objectAttributes input {
+			width: 75px;
 		}
-		
 	</style>
 </head>
 
@@ -700,6 +739,17 @@
 		<fieldset id="objectProperties">
 			<legend>Properties:</legend>
 			Name: <input id="rename_text" type="text" name="change_name" maxlength="10">
+		</fieldset>
+		
+		<fieldset>
+			<legend>Attributes:</legend>
+			<table id="objectAttributes">
+				<tr>
+					<th>Attribute</th>
+					<th>Type</th>
+					<th>Comment</th>
+				</tr>
+			</table>
 		</fieldset>
 	
 	</div>
