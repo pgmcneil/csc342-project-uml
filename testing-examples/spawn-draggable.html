@@ -1,0 +1,159 @@
+<!Doctype html>
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			//Function to clear all the objects when Clear all is clicked
+			$("#clear").click(function() {
+				$(".object").each(function() {
+					$(this).remove();
+				});
+			});
+			$(document).on("click", ".object .header .delete", function(e){
+			
+					$(this).parent().parent().remove();
+			
+			});
+			$(document).on("click", ".object .header .settings img", function() {
+				alert("asdf");
+			});
+			function objectTemplateWithID(id){
+				return '<div class="object" id="object'+ id +'"> \
+							<div class="header">	\
+								<span class="settings"><img src="gear.jpg" alt="Settings Menue Button" onclick="showSettings()" /></span> \
+								<span class="objectTitle">Object ' + id + '</span> \
+								<span class="delete">X</span> \
+							</div>	\
+								\
+								\
+						</div>';
+					
+			};
+			$("#canvas").on("dblclick", ".object", function(e){
+				e.stopImmediatePropagation();
+				return true;
+			
+			});
+			
+			//hold value for zindex bring to front
+			front = 0;
+			
+
+			$("#canvas").on("mousedown", ".object", function(e){
+// 				
+					// //Bring to Front
+					if($(this).css("z-index") != front){
+						$(this).css("z-index", ++front);
+					}
+					//$("#zIndex").text( $(this).css("z-index")); //debug
+					
+					//Toggle Selected
+					$(".selectedObject").removeClass("selectedObject");
+					$(this).addClass("selectedObject");
+			});
+			
+			
+			//When the document is double clicked, spawn an object
+			$("#canvas").dblclick(function(e) {
+				
+				//Position object so that the cursor is in the center of the header
+				yPos = (e.pageY - ($(objectTemplateWithID(null)).find(".header").height()/2 ));
+				xPos = e.pageX - ($(objectTemplateWithID(null)).width()/2);
+				
+				$("#zIndex").text(($(objectTemplateWithID(null)).find(".header").height()/2 ));
+				
+				//Add object and immediately select it
+				$(objectTemplateWithID($(".object").length))
+					.css("top", e.pageY + "px")
+					.css("left", e.pageX + "px")
+					.draggable({containment: "parent"})
+					.appendTo("#canvas")
+					.trigger("mousedown");
+				//Make all objects draggable to enable the most recently added one
+				//$(".object").draggable({containment: "parent"});
+			});
+		});
+	</script>
+	<style>
+		body,html{
+  			height:100%;
+		}
+		
+		#canvas{
+			height:100%;
+		}
+		#canvas div {
+			display: inline-block;	
+		}
+		.object {
+			width: 120px;
+			height: 180px;
+			background: #666;
+			opacity: 0.8;
+			position: absolute;
+			border: 2px solid blue;	
+			border-radius: 10px;
+
+		}
+		.object .header{
+			color: white;
+			position: relative;
+			border-top-left-radius:5px;
+			border-top-right-radius:5px;
+			top: 0px;
+			background:blue;
+			height:25px;
+			width:100%;	
+		
+		}
+		
+		
+		.object .objectTitle{
+			position: absolute;
+			top: 15%;	
+			left:30%;
+				-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		
+		.header .delete{
+			float: right;
+		}
+		
+		.object:hover {
+			cursor: move;
+		}
+		.selectedObject{
+			border: 2px solid red;	
+			
+		}
+		.selectedObject .header{
+			background: #f85032; /* Old browsers */
+			background: -moz-linear-gradient(top, #f85032 0%, #f16f5c 50%, #f6290c 51%, #f02f17 71%, #FF0000 100%); /* FF3.6+ */
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f85032), color-stop(50%,#f16f5c), color-stop(51%,#f6290c), color-stop(71%,#f02f17), color-stop(100%,#e73827)); /* Chrome,Safari4+ */
+			background: -webkit-linear-gradient(top, #f85032 0%,#f16f5c 50%,#f6290c 51%,#f02f17 71%,#e73827 100%); /* Chrome10+,Safari5.1+ */
+			
+		}
+		span {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}}
+	</style>
+</head>
+<body>
+	<span id="clear">Clear all</span>
+	<span id="zIndex"></span>
+	<div id="canvas"></div>
+
+</body>
+</html>
