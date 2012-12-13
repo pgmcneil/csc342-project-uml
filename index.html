@@ -5,7 +5,12 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 	<script src="raphael-min.js"></script>
 	<script>
-	
+			
+			//Array of objects on canvas. 
+			//Using 'entities' to avoid any
+			//naming conflicts with object
+			entities = {};
+			
 			function collapse(){
 				var obj = (this === window) ? $(".selectedObject") : $(this);
 				$(obj).find(".content").slideUp(function(){
@@ -25,7 +30,8 @@
 						$(this).parent().find(".minimize").html("_");
 				});
 				if(obj.attr("id") === $(".selectedObject").attr("id")){
-					//Change button visibility
+			
+			//Change button visibility
 					$("#toggleMinimize").html('Collapse');
 				}
 
@@ -62,6 +68,33 @@
 			function clearAll() {
 				$(".object").remove();
 			}
+			
+			function createSQL() {
+			
+				var sqlOutput = '';
+				
+				$(".object").each(function(i){
+					sqlOutput += "CREATE TABLE " + $(this).find(".objectTitle").html().replace(" ", "_") + "(\n";
+					$(this).find(".attribute").each(function(){
+						//alert(this.innerHTML);
+						sqlOutput += "	" + this.innerHTML.replace(" ", "_") + ",\n";
+					});
+					sqlOutput += ")\n";
+				});
+				
+			/*	
+				$('<div id="output">' + sqlOutput + '</div>').css("z-index", "100").offest({
+					top: 0,
+					left: 0
+				}).appendTo($(document));
+				
+			*/	
+			
+			alert(sqlOutput);
+
+				
+			}
+			
 		Raphael.fn.arrow = function (x1, y1, x2, y2, size) {
 			var angle = -90;
 			var width = $(".object").width();
@@ -93,16 +126,36 @@
 		};
 		
 		$(document).ready(function() {
-			function objectTemplateWithID(id){
-				return '<div class="object" id="object'+ id +'"> \
+			function createObjectWithID(id){
+			
+				var objectID = 'object' + id;
+			
+				var newObject = {
+					id: objectID,
+					name: "Object " + id,
+					attributes: []
+				}
+				
+				var sampleAttribute = {
+					name: "Sample Attribute",
+					type: "string",
+					defaultValue: "sample Attribute",
+					notNull: false,
+					primaryKey: false
+				}
+				
+				newObject.attributes.push(sampleAttribute);
+				entities[newObject.id] = newObject;
+				
+				return '<div class="object" id="'+ newObject.id +'"> \
 							<div class="header">	\
-								<span class="objectTitle">Object ' + id + '</span> \
+								<div class="objectTitle">' + newObject.name + '</div> \
 								<span class="minimize">_</span> \
 								<span class="delete">X</span> \
 							</div>	\
 							<div class="content">	\
 								<table> \
-									<tr><td class="attribute" row=0>Sample attribute</td><td class="relation">o</td></tr> \
+									<tr><td class="attribute" row=0>' + newObject.attributes[0].name + '</td><td class="relation">o</td></tr> \
 								</table> \
 							</div>\
 						</div>';
@@ -182,6 +235,7 @@
 			}
 			
 			function recordAttribute(input) {
+				//entities[input.parents(".object").attr("id")].attributes[]
 				input.parent().html(input.val());
 				updateAttributesTable();
 			}
@@ -225,13 +279,47 @@
  */
 			//Properties Listener
 			$("#rename_text").change(function() {
-				console.log("fired");
-				$(".selectedObject .objectTitle").html($('#rename_text').val());
+				var newName = $("#rename_text").val();
+				
+				entities[$(".selectedObject").attr("id")].name = newName;
+				$(".selectedObject .objectTitle").html(newName);
 			});
 			$("#rename_button").on("click", function(){
-				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
+			
+				var newName = $("#rename_text").val();
+				
+				entities[$(".selectedObject").attr("id")].name = newName;
+				$(".selectedObject .objectTitle").html(newName);
 				//alert(document.getElementById('rename_text').value);
 			});
+			$("#canvas").on("dblclick", ".object .objectTitle", function(e){
+				var title = $(this);
+				var curText = title.html();
+				
+				title.html('<input type="text" />');
+				title.find("input").focus().val(curText).css("width", 60 );
+			});
+			$("#canvas").on("dblclick", ".object .objectTitle input", function(e) {
+				e.stopPropagation();
+			});
+			$("#canvas").on("mousedown", ".object .objectTitle input", function(e) {
+				e.stopPropagation();
+			});
+			$("#canvas").on("focusout", ".object .objectTitle input", function(e) {
+				if($(this).val().length > 0) {
+					recordAttribute($(this));
+				} else {
+					var title = 'Object ' + $(this).parents(".object").attr("id").charAt(6);
+					//alert("There's nothing in the input! id: " + $(this).parents(".object").attr("id"));
+					$(this).parent().html(title);
+				}
+			});
+			$("#canvas").on("keypress", ".object .objectTitle input:focus", function(e) {
+				if(e.which == 13) {
+					recordAttribute($(this));
+				}
+			});
+			
 			$("#canvas").on("click", ".object .delete", function(e){
 				$(this).parent().parent().remove();
 				deleteRelation($(this).closest(".object"));
@@ -283,7 +371,7 @@
 				//Position object so that the cursor is in the center of the header
 				var id = 0;
 				id = checkID(id);
-				var newObject = objectTemplateWithID(id);
+				var newObject = createObjectWithID(id);
 				$("#canvas").append(newObject);
 				newObject = $("#object"+id);
 				yPos = e.pageY - newObject.find(".header").height()/2;
@@ -296,8 +384,10 @@
 						top: yPos,
 						left: xPos
 					})
-					.draggable({containment: "parent"})
+					.draggable({containment: "parent", grid: [ 20,20 ] })
 					.trigger("mousedown");
+				//Select the attribute to begin editing
+				newObject.find(".objectTitle").trigger("dblclick");
 			});
 			$("#toolbox").on("click", "#selectedColor", function(e) {
 				e.stopPropagation();
@@ -444,7 +534,7 @@
    			-webkit-linear-gradient(left, rgba(0,0,0,.3) 2px, transparent 2px),
  			-webkit-linear-gradient(rgba(0,0,0,.3) 1px, transparent 1px),
 			-webkit-linear-gradient(left, rgba(0,0,0,.3) 1px, transparent 1px);
-			background-size:100px 100px, 100px 100px, 20px 20px, 20px 20px;
+			background-size:100px 100px, 100px 100px, 10px 10px, 10px 10px;
 			background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;
 		}
 		* html div#canvas {
@@ -458,7 +548,7 @@
 		.object {
 			width: 120px;
 			position: absolute;
-			opacity: 0.8;
+			opacity: 0.9;
 			border: 2px solid blue;	
 			border-radius: 10px;
 
@@ -474,7 +564,7 @@
 			background:blue;
 			height:25px;
 			width:100%;	
-		
+			text-align: center;
 		}
 		.object .minimize {
 			position: relative;
@@ -492,9 +582,14 @@
 			background: rgb(10,10,200);
 		}
 		.object .objectTitle{
-			position: absolute;
+			position: relative;
 			top: 15%;	
-			left:30%;
+			margin: 0px;
+			max-width: 60px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		//	left:25%;
 		}
 		.object .delete{
 			position: relative;
@@ -548,13 +643,18 @@
 
 		}
 		
-		#toolbox{
-		 
+		#toolbox{ 
 			height:100%;
+<<<<<<< HEAD
 			width:275px;
 			top: 0;
 			right: 0;
 			position: absolute;
+=======
+			width:14%;
+			max-width: 190px;
+			/*vertical-align: top;*/
+>>>>>>> origin/master
 			border: 2px solid black;
 		}
 		#globalSettings{
@@ -600,6 +700,8 @@
 		}
 		#objectProperties{
 			height:150px;
+			position: relative;
+			bottom: 0px;
 		}
 		#rename_text{
 			width:100%;
@@ -613,9 +715,19 @@
 			height: 100%;
 			width: 100%;
 		}
+<<<<<<< HEAD
 		#objectAttributes input {
 			width: 75px;
 		}
+=======
+		
+		#output{
+			height: 100%;
+			width: 500px;
+		
+		}
+		
+>>>>>>> origin/master
 	</style>
 </head>
 
@@ -627,7 +739,8 @@
 			<legend>Global Settings:</legend>
 				<button type="button" onclick= "clearAll()">Clear All</button><br/>
 				<button type="button" onclick= "collapseAll()">Collapse All</button><br/>
-				<button type="button" onclick= "expandAll()">Expand All</button>
+				<button type="button" onclick= "expandAll()">Expand All</button></br>
+				<button type="button" onclick="createSQL()">Generate SQL</button>
 		</fieldset>
 		 
 		<fieldset id="objectSettings">
