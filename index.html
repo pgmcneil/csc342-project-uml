@@ -5,7 +5,12 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 	<script src="raphael-min.js"></script>
 	<script>
-	
+			
+			//Array of objects on canvas. 
+			//Using 'entities' to avoid any
+			//naming conflicts with object
+			entities = {};
+			
 			function collapse(){
 				var obj = (this === window) ? $(".selectedObject") : $(this);
 				$(obj).find(".content").slideUp(function(){
@@ -25,7 +30,8 @@
 						$(this).parent().find(".minimize").html("_");
 				});
 				if(obj.attr("id") === $(".selectedObject").attr("id")){
-					//Change button visibility
+			
+			//Change button visibility
 					$("#toggleMinimize").html('Collapse');
 				}
 
@@ -62,6 +68,33 @@
 			function clearAll() {
 				$(".object").remove();
 			}
+			
+			function createSQL() {
+			
+				var sqlOutput = '';
+				
+				$(".object").each(function(i){
+					sqlOutput += "CREATE TABLE " + $(this).find(".objectTitle").html() + "(\n";
+					$(this).find(".attribute").each(function(){
+						//alert(this.innerHTML);
+						sqlOutput += "	" + this.innerHTML + ",\n";
+					});
+					sqlOutput += ")\n";
+				});
+				
+			/*	
+				$('<div id="output">' + sqlOutput + '</div>').css("z-index", "100").offest({
+					top: 0,
+					left: 0
+				}).appendTo($(document));
+				
+			*/	
+			
+			alert(sqlOutput);
+
+				
+			}
+			
 		Raphael.fn.arrow = function (x1, y1, x2, y2, size) {
 			var angle = -90;
 			var width = $(".object").width();
@@ -93,16 +126,36 @@
 		};
 		
 		$(document).ready(function() {
-			function objectTemplateWithID(id){
-				return '<div class="object" id="object'+ id +'"> \
+			function createObjectWithID(id){
+			
+				var objectID = 'object' + id;
+			
+				var newObject = {
+					id: objectID,
+					name: "Object " + id,
+					attributes: []
+				}
+				
+				var sampleAttribute = {
+					name: "Sample Attribute",
+					type: "string",
+					defaultValue: "sample Attribute",
+					notNull: false,
+					primaryKey: false
+				}
+				
+				newObject.attributes.push(sampleAttribute);
+				entities[newObject.id] = newObject;
+				
+				return '<div class="object" id="'+ newObject.id +'"> \
 							<div class="header">	\
-								<div class="objectTitle">Object ' + id + '</div> \
+								<div class="objectTitle">' + newObject.name + '</div> \
 								<span class="minimize">_</span> \
 								<span class="delete">X</span> \
 							</div>	\
 							<div class="content">	\
 								<table> \
-									<tr><td class="attribute">Sample attribute</td><td class="relation">o</td></tr> \
+									<tr><td class="attribute">' + newObject.attributes[0].name + '</td><td class="relation">o</td></tr> \
 								</table> \
 							</div>\
 						</div>';
@@ -163,6 +216,7 @@
 			}
 			
 			function recordAttribute(input) {
+				//entities[input.parents(".object").attr("id")].attributes[]
 				input.parent().html(input.val());
 			}
 			function removeAttribute(input) {
@@ -204,11 +258,17 @@
  */
 			//Properties Listener
 			$("#rename_text").change(function() {
-				console.log("fired");
-				$(".selectedObject .objectTitle").html($('#rename_text').val());
+				var newName = $("#rename_text").val();
+				
+				entities[$(".selectedObject").attr("id")].name = newName;
+				$(".selectedObject .objectTitle").html(newName);
 			});
 			$("#rename_button").on("click", function(){
-				$(".selectedObject .objectTitle").html(document.getElementById('rename_text').value);
+			
+				var newName = $("#rename_text").val();
+				
+				entities[$(".selectedObject").attr("id")].name = newName;
+				$(".selectedObject .objectTitle").html(newName);
 				//alert(document.getElementById('rename_text').value);
 			});
 			$("#canvas").on("dblclick", ".object .objectTitle", function(e){
@@ -289,7 +349,7 @@
 				//Position object so that the cursor is in the center of the header
 				var id = 0;
 				id = checkID(id);
-				var newObject = objectTemplateWithID(id);
+				var newObject = createObjectWithID(id);
 				$("#canvas").append(newObject);
 				newObject = $("#object"+id);
 				yPos = e.pageY - newObject.find(".header").height()/2;
@@ -305,7 +365,7 @@
 					.draggable({containment: "parent", grid: [ 20,20 ] })
 					.trigger("mousedown");
 				//Select the attribute to begin editing
-				//newObject.find(".content td").trigger("click");
+				newObject.find(".objectTitle").trigger("dblclick");
 			});
 			$("#toolbox").on("click", "#selectedColor", function(e) {
 				e.stopPropagation();
@@ -606,6 +666,13 @@
 			height: 100%;
 			width: 100%;
 		}
+		
+		#output{
+			height: 100%;
+			width: 500px;
+		
+		}
+		
 	</style>
 </head>
 
@@ -617,7 +684,8 @@
 			<legend>Global Settings:</legend>
 				<button type="button" onclick= "clearAll()">Clear All</button><br/>
 				<button type="button" onclick= "collapseAll()">Collapse All</button><br/>
-				<button type="button" onclick= "expandAll()">Expand All</button>
+				<button type="button" onclick= "expandAll()">Expand All</button></br>
+				<button type="button" onclick="createSQL()">Generate SQL</button>
 		</fieldset>
 		 
 		<fieldset id="objectSettings">
