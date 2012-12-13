@@ -390,13 +390,25 @@
 	<style>
 	
 		body,html{
-  			height:98%;
+  			height:100%;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+		}
+		body {
+			margin: 0;
+			padding: 0 275px 0 0;
+		}
+		@media screen {
+			body > div#toolbox {
+				position: fixed;
+			}
+		}
+		* html body {
+			overflow: hidden;
 		}
 		div{
 			display: inline-block;
@@ -415,7 +427,7 @@
 		
 		#canvas{
 			height:100%;
-			width: 85%;
+			width: 100%;
 			display: inline-block;
 			border: 2px solid grey;
  			background-color:#fff;
@@ -429,6 +441,10 @@
 			-webkit-linear-gradient(left, rgba(0,0,0,.3) 1px, transparent 1px);
 			background-size:100px 100px, 100px 100px, 20px 20px, 20px 20px;
 			background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;
+		}
+		* html div#canvas {
+			height: 100%;
+			overflow: auto;
 		}
 		#canvas div {
 			display: inline-block;	
@@ -530,11 +546,11 @@
 		#toolbox{
 		 
 			height:100%;
-			width:14%;
-			vertical-align: top;
+			width:275px;
+			top: 0;
+			right: 0;
+			position: absolute;
 			border: 2px solid black;
-		    margin-left: 2px;
-			display:inline-block;
 		}
 		#globalSettings{
 			text-align: center;
